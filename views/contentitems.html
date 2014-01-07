@@ -1,0 +1,15 @@
+{{#each contentitem}}
+{{#if selected}}
+<div class="content-item content-item--instagram selected" 
+    data-item-id="{{id}}"
+    data-created="{{created_time}}">
+{{else}}
+<div class="content-item content-item--instagram" 
+    data-item-id="{{id}}"
+    data-created="{{created_time}}">
+{{/if}}
+    <img src="{{images.low_resolution.url}}" />
+    <a target="_blank" href="{{link}}">Original</a>
+    <span>{{user.full_name}}</span>
+</div>
+{{/each}}

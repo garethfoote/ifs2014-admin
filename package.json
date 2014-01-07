@@ -1,0 +1,12 @@
+{
+  "name": "ifs2014",
+  "description": "Mapping application admin.",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "3.x",
+    "hbs": "*",
+    "socket.io": "~0.9.16",
+    "tingodb": "~0.1.18",
+    "q": "~1.0.0"
+  }
+}
