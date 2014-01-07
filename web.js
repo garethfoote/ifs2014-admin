@@ -5,7 +5,7 @@ var express = require('express'),
     Q = require('q'),
     Db = require('tingodb')().Db;
 
-var server = app.listen(5000);
+var server = app.listen(process.env.PORT || 5000);
 var io = require('socket.io').listen(server);
 
 var db = new Db('data', {});
