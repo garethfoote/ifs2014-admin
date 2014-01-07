@@ -2,7 +2,7 @@
   "name": "ifs2014-admin",
   "description": "Mapping application admin.",
   "version": "0.0.1",
-  "main": "app.js",
+  "main": "web.js",
   "repository": {
       "type": "git",
       "url": "https://github.com/garethfoote/ifs2014-admin.git"
@@ -14,5 +14,8 @@
     "socket.io": "~0.9.16",
     "tingodb": "~0.1.18",
     "q": "~1.0.0"
+  },
+  "engines": {
+      "node": "0.10.x"
   }
 }

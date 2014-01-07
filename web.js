@@ -5,10 +5,10 @@ var express = require('express'),
     Q = require('q'),
     Db = require('tingodb')().Db;
 
-var server = app.listen(3000);
+var server = app.listen(5000);
 var io = require('socket.io').listen(server);
 
-var db = new Db('.data', {});
+var db = new Db('data', {});
 var dbig = db.collection("ifs2014_instagrams_001", function(err, res){
     console.log("Collection opened");
 });
