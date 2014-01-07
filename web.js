@@ -2,16 +2,30 @@ var express = require('express'),
     app = express(),
     hbs = require('hbs'),
     https = require('https'),
-    Q = require('q'),
-    Db = require('tingodb')().Db;
+    Q = require('q');
+    // Db = require('tingodb')().Db;
+
+var MongoClient = require('mongodb').MongoClient;
 
 var server = app.listen(process.env.PORT || 5000);
 var io = require('socket.io').listen(server);
+var igramcollection;
 
+MongoClient.connect('mongodb://127.0.0.1:27017/ifs2014', function(err, db) {
+    if(err) throw err;
+
+    db.collection("instagrams", function(err, res){
+        igramcollection = res;
+    });
+
+});
+
+/* UNUSED - Moved to mongodb from tingodb
 var db = new Db('data', {});
-var dbig = db.collection("ifs2014_instagrams_001", function(err, res){
+var igramcollection = db.collection("ifs2014_instagrams_001", function(err, res){
     console.log("Collection opened");
 });
+*/
 
 function getRecentInstagram( userid ){
 
@@ -57,7 +71,7 @@ function getExistingData( results ) {
 
     var deferred = Q.defer();
 
-    dbig.find({ user_id : results.data[0].user.id }).sort({ created_time : -1 })
+    igramcollection.find({ user_id : results.data[0].user.id }).sort({ created_time : -1 })
         .toArray(function( err, res ){
             console.log("found", err);
             if( err != "null" ){
@@ -88,6 +102,7 @@ function parseInstagramData( data ) {
         ],
         existing = data.existing,
         fresh = data.fresh,
+        toinsert = [],
         i = fresh.length;
 
 
@@ -102,36 +117,27 @@ function parseInstagramData( data ) {
         fresh[i].user_id = fresh[i].user.id;
     }
 
-    console.log(fresh.length);
-    console.log(existing.length);
-
-    // Loop through Igrams
-    // Check if ticked or not.
-
+    // Created array of items to insert.
     i = fresh.length;
-    insertingnum = 0;
-    completenum = 0;
     while( i-- ){
         if( ! existing.length || fresh[i].created_time > existing[0].created_time) {
-            insertingnum++;
             console.log("insert", fresh[i].created_time);
-            dbig.insert( fresh[i], {w:1}, function( err, res ){
-                if( ! err ){
-                    completenum++;
-                    console.log("complete", completenum +"/"+ insertingnum);
-                    if( completenum == insertingnum ){
-                        deferred.resolve( insertingnum );
-                    }
-                } else {
-                    deferred.reject(new Error(err));
-                }
-            });
+            toinsert.push( fresh[i] );
         }
     };
 
-    if( insertingnum == 0 ){
+    // Do the insert if there are any newies.
+    if( toinsert.length > 0 ){
+        // Insert all at once rather than one at a time.
+        igramcollection.insert( toinsert, {w:1}, function( err, res ){
+            if( ! err ){
+                deferred.resolve( toinsert.length );
+            } else {
+                deferred.reject(new Error(err));
+            }
+        });
+    } else {
         setTimeout(function(){
-            console.log("inserting none");
             deferred.resolve(0);
         }, 500);
     }
@@ -186,7 +192,9 @@ app.use(express.static('public'));
 
 // Routes.
 app.get('/', function(req, response){
-    dbig.find().sort({ created_time : -1 })
+
+    
+    igramcollection.find().sort({ created_time : -1 })
         .toArray(function( err, results ){
             response.render('contentitems', { contentitem : results } );
         });
@@ -203,7 +211,7 @@ app.get('/checknew', function(req, response){
 
 app.get('/output.json', function(req, response){
 
-    dbig.find({ selected : true }).sort({ created_time : -1 })
+    igramcollection.find({ selected : true }).sort({ created_time : -1 })
         .toArray(function( err, results ){
             response.setHeader('Content-Type', 'application/json');
             response.end(JSON.stringify(results));
@@ -216,7 +224,7 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('deselect', function (id) {
         console.log("Deselect: " + id);
-        dbig.update({ id : id },
+        igramcollection.update({ id : id },
                     { $set: { selected : false }},
                     function(err, items){
                         console.log(err, items);
@@ -226,7 +234,7 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('select', function (id) {
         console.log("Select: " + id);
-        dbig.update({ id : id },
+        igramcollection.update({ id : id },
                     { $set: { selected : true }},
                     function(err, items){
                         console.log(err, items);
