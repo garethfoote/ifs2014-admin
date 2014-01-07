@@ -11,7 +11,11 @@ var server = app.listen(process.env.PORT || 5000);
 var io = require('socket.io').listen(server);
 var igramcollection;
 
-MongoClient.connect('mongodb://127.0.0.1:27017/ifs2014', function(err, db) {
+var mongoURI = process.env.MONGOLAB_URI ||
+  process.env.MONGOHQ_URL ||
+    'mongodb://127.0.0.1:27017/ifs2014';
+
+MongoClient.connect(mongoURI, function(err, db) {
     if(err) throw err;
 
     db.collection("instagrams", function(err, res){
