@@ -1,8 +1,9 @@
 "use strict";
-var socket = io.connect('http://localhost'),
-classRegExp = function( className ){
-    return new RegExp("(?:^|\\s)"+className+"(?!\\S)");
-};
+var host = location.origin.replace(/^http/, 'ws'),
+    socket = io.connect(host),
+    classRegExp = function( className ){
+        return new RegExp("(?:^|\\s)"+className+"(?!\\S)");
+    };
 
 
 function itemClickedHandler( e ){
