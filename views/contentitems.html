@@ -1,15 +1,35 @@
 {{#each contentitem}}
 {{#if selected}}
-<div class="content-item content-item--instagram selected" 
-    data-item-id="{{id}}"
-    data-created="{{created_time}}">
+<div class="content-item content-item--instagram isselected" 
 {{else}}
 <div class="content-item content-item--instagram" 
+{{/if}}
     data-item-id="{{id}}"
     data-created="{{created_time}}">
-{{/if}}
-    <img src="{{images.low_resolution.url}}" />
-    <a target="_blank" href="{{link}}">Original</a>
-    <span>{{user.full_name}}</span>
+    <img class="content-item__image" src="{{images.low_resolution.url}}" />
+    <div>
+        <a class="content-item__link" target="_blank" href="{{link}}">Original</a>
+        <span class="content-item__author">{{user.full_name}}</span>
+        <form>
+            <!--
+            <div>
+                <span class="content-item__type-title">Type:</span>
+                <label for="content-item__type-studio">
+                    <input type="radio" name="type" value="studio" id="content-item_type-studio" />
+                    Studio
+                </label>
+                <label for="content-item__type-showcase">
+                    <input type="radio" name="content-item__type" value="showcase" id="content-item__type-showcase"  />
+                    Showcase
+                </label>
+            </div>
+            -->
+            <div>
+                <span class="content-item__tags__title">Tags:</span>
+                <input data-item-id="{{id}}" class="content-item__tags" name="content-item__tags" type="text" value="{{#each custom_tags}}{{#if @last}}{{this}}{{else}}{{this}},{{/if}} {{/each}}" />
+                <span class="content-item__info">Comma separated</span>
+            </div>
+        </form>
+    </div>
 </div>
 {{/each}}

@@ -1,0 +1,11 @@
+[
+    { "name" : "Gareth Foote", "user_id" : 1322341, "country": "Bahrain", "home" : { "latitude":"48.856614", "longitude": "2.352222"} },
+    { "name" : "Babs", "user_id" : 13048898, "country": "Bolivia", "home" : { "latitude":"48.856614", "longitude": "2.352222"} },
+    { "name" : "Sam Pain", "user_id" : 575197300, "country": "Austria", "home" : { "latitude":"40.751581", "longitude": "-73.982280"} },
+    { "name" : "Lisa Baldini", "user_id" : 21043304, "country" : "Australia", "home" : {"latitude":"48.856614", "longitude": "2.352222"} },
+    { "name" : "Gui Seiz", "user_id" : 4101829, "country" : "Portugal", "home" : {"latitude":"38.7138", "longitude": "9.1394"} },
+    { "name" : "Marc Hibbins", "user_id" : 960734, "country" : "China", "home" : {"latitude":"31.230416", "longitude": "121.473701"} },
+    { "name" : "Alice Jackson", "user_id" : 45226781, "country" : "Denmark", "home" : {"latitude":"56.263920", "longitude": "9.501785"} },
+    { "name" : "Image Hunter", "user_id" : 1426868, "country" : "Estonia", "home" : {"latitude":"58.595272", "longitude": "25.013607"} },
+    { "name" : "Gleeding", "user_id" : 677458, "country" : "Japan", "home" : {"latitude":"10.314919", "longitude": "3.208008"} }
+]

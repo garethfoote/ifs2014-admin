@@ -8,25 +8,45 @@ var host = location.origin.replace(/^http/, 'ws'),
 
 function itemClickedHandler( e ){
 
-    var el = e.currentTarget,
+    if( e.target.nodeName.toLowerCase() === "input" ){
+        return;
+    }
+
+    var el = e.currentTarget.parentNode,
+        // type = document.getElementByName("content-item__type"),
         id = el.getAttribute('data-item-id');
 
-    console.log( el, id,  el.className.match( classRegExp('selected') ));
-    if( ! el.className.match( classRegExp('selected')) ){;
-        el.className = el.className + " selected";
-        socket.emit('select', id );
+    // console.log( el, id,  el.className.match( classRegExp('isselected') ));
+    if( ! el.className.match( classRegExp('isselected')) ){;
+        el.className = el.className + " isselected";
+        socket.emit('select',  id );
     } else {
-        el.className = el.className.replace( classRegExp('selected'), '' );
-        socket.emit('deselect', id );
+        el.className = el.className.replace( classRegExp('isselected'), '' );
+        socket.emit('select',  id );
     }
 
 }
 
-var ci = document.querySelectorAll('.content-item');
 
-for( var i=0; i < ci.length; i++ ){
+function handleBlur( e ){
 
-    ci[i].addEventListener("click", itemClickedHandler);
+    var el = e.target,
+        id = el.getAttribute('data-item-id'),
+        value = el.value;
+
+    socket.emit('tags', { id : id, tags : value });
 
 }
 
+
+var ci = document.querySelectorAll('.content-item__image'),
+    inputs = document.querySelectorAll('.content-item__tags');
+
+for( var i=0; i < ci.length; i++ ){
+
+    var tags = ci[i].parentNode.querySelector(".content-item__tags");
+
+    ci[i].addEventListener("click", itemClickedHandler);
+    tags.addEventListener("blur", handleBlur );
+
+}

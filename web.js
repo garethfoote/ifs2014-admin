@@ -2,7 +2,9 @@ var express = require('express'),
     app = express(),
     hbs = require('hbs'),
     https = require('https'),
-    Q = require('q');
+    Q = require('q'),
+    fs = require('fs'),
+    cors = require('cors');
     // Db = require('tingodb')().Db;
 
 var MongoClient = require('mongodb').MongoClient;
@@ -10,6 +12,7 @@ var MongoClient = require('mongodb').MongoClient;
 var server = app.listen(process.env.PORT || 5000);
 var io = require('socket.io').listen(server);
 var igramcollection;
+var designers;
 
 var mongoURI = process.env.MONGOLAB_URI ||
   process.env.MONGOHQ_URL ||
@@ -31,7 +34,7 @@ var igramcollection = db.collection("ifs2014_instagrams_001", function(err, res)
 });
 */
 
-function getRecentInstagram( userid ){
+function getRecentInstagram( designer ){
 
     var deferred = Q.defer();
 
@@ -44,7 +47,7 @@ function getRecentInstagram( userid ){
         method: 'GET'
     };
 
-    options.path = options.path.replace(/{user_id}/, userid);
+    options.path = options.path.replace(/{user_id}/, designer.user_id);
     console.log("Get recent Instagrams: "+ options.path);
 
     var req = https.request(options, function(res) {
@@ -58,7 +61,7 @@ function getRecentInstagram( userid ){
         });
         res.on('end', function () {
             var parsed = JSON.parse(result);
-            deferred.resolve(parsed);
+            deferred.resolve({ results : parsed, designer : designer });
         });
     });
     req.end();
@@ -75,11 +78,11 @@ function getExistingData( results ) {
 
     var deferred = Q.defer();
 
-    igramcollection.find({ user_id : results.data[0].user.id }).sort({ created_time : -1 })
+    igramcollection.find({ user_id : results.designer.user_id }).sort({ created_time : -1 })
         .toArray(function( err, res ){
             console.log("found", err);
             if( err != "null" ){
-                deferred.resolve( { existing: res, fresh : results.data });
+                deferred.resolve( { existing: res, fresh : results.results.data, designer : results.designer });
             } else {
                 deferred.reject(new Error(err));
             }
@@ -102,10 +105,12 @@ function parseInstagramData( data ) {
             "images",
             "type",
             "id",
-            "user"
+            "user",
+            "country"
         ],
         existing = data.existing,
         fresh = data.fresh,
+        designer = data.designer,
         toinsert = [],
         i = fresh.length;
 
@@ -118,7 +123,9 @@ function parseInstagramData( data ) {
             }
         }
         // Add user_id here to makequerying eaiser.
-        fresh[i].user_id = fresh[i].user.id;
+        for(var key in designer ){
+            fresh[i][key] = designer[key];
+        }
     }
 
     // Created array of items to insert.
@@ -154,18 +161,19 @@ function getNewInstagrams(){
 
     var deferred = Q.defer();
 
-    var designers = [
-        { name : "Gareth Foote", twitterusername : "gaffafoote", instagramid : 1322341 },
-        { name : "Babs", instagramid : 13048898 }
-    ];
-
     var completenum = 0, insertedtotal = 0;
     for (var i = 0; i < designers.length; i++) {
 
-        getRecentInstagram( designers[i].instagramid )
+        igramcollection.update({ user_id : designers[i].user_id },
+                    { $set: designers[i] }, { multi : true },
+                    function(err, items){
+                        console.log("Update designers");
+                    });
+
+        getRecentInstagram( designers[i] )
             .then(getExistingData)
             .then(parseInstagramData)
-            .then( function( inserted ){
+            .then(function( inserted ){
 
                 completenum++;
                 insertedtotal += inserted;
@@ -193,11 +201,11 @@ app.engine('html', hbs.__express);
 app.use(express.urlencoded());
 app.use(express.json());
 app.use(express.static('public'));
+app.use(cors());
 
 // Routes.
 app.get('/', function(req, response){
 
-    
     igramcollection.find().sort({ created_time : -1 })
         .toArray(function( err, results ){
             response.render('contentitems', { contentitem : results } );
@@ -223,6 +231,16 @@ app.get('/output.json', function(req, response){
 
 });
 
+// Get designers file on startup.
+var file = __dirname + '/designers.json';
+fs.readFile(file, 'utf8', function (err, data) {
+    if (err) {
+        console.log('Error: ' + err);
+        return;
+    }
+    designers = JSON.parse(data);
+});
+
 // sockets
 io.sockets.on('connection', function (socket) {
 
@@ -243,6 +261,27 @@ io.sockets.on('connection', function (socket) {
                     function(err, items){
                         console.log(err, items);
                     });
+    });
+
+    socket.on('tags', function (data) {
+        console.log("Select: " + data.id);
+
+        var tags = [];
+        data.tags.split(",").forEach(function(tag){
+            console.log(tag.trim(),tag.trim().match(/^[a-zA-Z0-9_]*$/));
+            if( tag.trim() && tag.trim().match(/^[a-zA-Z0-9_]*$/)){
+                console.log("passed");
+                tags.push(tag.trim());
+            }
+        });
+
+        if( tags.length ){
+            igramcollection.update({ id : data.id },
+                    { $set: { custom_tags : tags }},
+                    function(err, items){
+                        console.log("Updated tags", err, items);
+                    });
+        }
     });
 
 });
