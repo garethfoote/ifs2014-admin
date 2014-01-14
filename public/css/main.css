@@ -136,7 +136,38 @@ textarea {
     width: 100%;
 }
 
+.warning {
+    width: 500px;
+    margin: 0 auto;
+    text-align: center;
+}
 
+.warning .cta {
+    display: block;
+    width: 50%;
+    height: 30px;
+    margin: 0 auto;
+    line-height: 30px;
+}
+
+.warning .js-yes:hover {
+    background: red;
+    color: white;
+}
+
+.warning .js-no:hover {
+    background: blue;
+    color: white;
+}
+
+.warning .js-yes {
+    margin-top: 20px;
+    border: red solid 1px;
+}
+
+.warning .js-no {
+    border: blue solid 1px;
+}
 
 
 

@@ -38,15 +38,29 @@ function handleBlur( e ){
 
 }
 
+$(function(){
 
-var ci = document.querySelectorAll('.content-item__image'),
-    inputs = document.querySelectorAll('.content-item__tags');
+    var ci = document.querySelectorAll('.content-item__image'),
+        inputs = document.querySelectorAll('.content-item__tags');
 
-for( var i=0; i < ci.length; i++ ){
+    for( var i=0; i < ci.length; i++ ){
 
-    var tags = ci[i].parentNode.querySelector(".content-item__tags");
+        var tags = ci[i].parentNode.querySelector(".content-item__tags");
 
-    ci[i].addEventListener("click", itemClickedHandler);
-    tags.addEventListener("blur", handleBlur );
+        ci[i].addEventListener("click", itemClickedHandler);
+        tags.addEventListener("blur", handleBlur );
 
-}
+    }
+
+    $(".warning .cta").on("click", function(e){
+
+        var $el = $(e.currentTarget);
+        if( $el.hasClass("js-yes") ){
+            socket.emit("removeall");
+        } else {
+            document.location = "/";
+        }
+
+    });
+
+});

@@ -221,6 +221,12 @@ app.get('/checknew', function(req, response){
 
 });
 
+app.get('/cleardata', function(req, response){
+
+    response.render('removeall');
+
+});
+
 app.get('/output.json', function(req, response){
 
     igramcollection.find({ selected : true }).sort({ created_time : -1 })
@@ -261,6 +267,12 @@ io.sockets.on('connection', function (socket) {
                     function(err, items){
                         console.log(err, items);
                     });
+    });
+
+    socket.on('removeall', function (data) {
+
+        igramcollection.remove();
+
     });
 
     socket.on('tags', function (data) {
