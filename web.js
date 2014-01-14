@@ -271,7 +271,9 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('removeall', function (data) {
 
-        igramcollection.remove();
+        igramcollection.remove(function(err, result) {
+                        console.log("Remove callback", err, result);
+                    });
 
     });
 
