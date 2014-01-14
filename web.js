@@ -218,14 +218,14 @@ app.get('/article/:id', function(req, res) {
 */ 
 
 // Routes.
-app.get('/', /*auth.ensureAuth,*/ function(req, response){
+app.get('/', auth.ensureAuth, function(req, response){
     igramcollection.find().sort({ created_time : -1 })
         .toArray(function( err, results ){
             response.render('contentitems', { contentitem : results, user: req.user } );
         });
 });
 
-app.get('/date/:date/hash/:hash', /*auth.ensureAuth,*/ function(req, response){
+app.get('/date/:date/hash/:hash', auth.ensureAuth, function(req, response){
 
     var d = {}, date = req.params.date,
         year = date.substr(0,4),
