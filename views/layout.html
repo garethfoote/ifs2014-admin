@@ -9,6 +9,17 @@
 </head>
 
 <body>
+{{#if user}}
+<p>
+<a href="/">Select</a> | 
+<a href="/checknew">Check New</a> | 
+<a href="/logout">Log Out</a>
+</p>
+{{else}}
+<p>
+<a href="/login">Log In</a>
+</p>
+{{/if}}
 
 {{{body}}}
 

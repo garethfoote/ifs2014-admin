@@ -4,8 +4,11 @@ var express = require('express'),
     https = require('https'),
     Q = require('q'),
     fs = require('fs'),
-    cors = require('cors');
-    // Db = require('tingodb')().Db;
+    cors = require('cors'),
+    // Authentication.
+    LocalStrategy = require('passport-local').Strategy,
+    passport = require('passport'),
+    flash = require('connect-flash');
 
 var MongoClient = require('mongodb').MongoClient;
 
@@ -195,6 +198,91 @@ function getNewInstagrams(){
     return deferred.promise;
 }
 
+var auth = (function(){
+
+    var self = this,
+        users = [
+            { id: 1, username: 'gareth', password: 'pAssw0rd'},
+            { id: 2, username: 'curator', password: 'If52014$'}
+        ],
+
+        findById = function(id, fn) {
+            var idx = id - 1;
+            if (users[idx]) {
+                fn(null, users[idx]);
+            } else {
+                fn(new Error('User ' + id + ' does not exist'));
+            }
+        },
+
+        findByUsername = function(username, fn) {
+            for (var i = 0, len = users.length; i < len; i++) {
+                var user = users[i];
+                if (user.username === username) {
+                    return fn(null, user);
+                }
+            }
+            return fn(null, null);
+        },
+
+        ensureAuth = function(req, res, next) {
+            if (req.isAuthenticated()) { return next(); }
+            res.redirect('/login')
+        },
+
+        init = function(){
+
+            passport.serializeUser(function(user, done) {
+                done(null, user.id);
+            });
+
+            passport.deserializeUser(function(id, done) {
+                findById(id, function (err, user) {
+                    done(err, user);
+                });
+            });
+
+            var ls = new LocalStrategy(
+                        function(username, password, done) {
+                            // asynchronous verification, for effect...
+                            process.nextTick(function () {
+
+                                findByUsername(username, function(err, user) {
+                                    if (err) { return done(err); }
+                                    if (!user) { return done(null, false, { message: 'Unknown user ' + username }); }
+                                    if (user.password != password) { return done(null, false, { message: 'Invalid password' }); }
+                                    return done(null, user);
+                                })
+                            });
+                        });
+            passport.use(ls);
+
+            app.get('/login', function(req, res){
+                  res.render('login', { user: req.user, message: req.flash('error') });
+            });
+
+            app.get('/logout', function(req, res){
+                req.logout();
+                res.redirect('/');
+            });
+
+            app.post('/login', 
+                    passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }),
+                    function(req, res) {
+                        res.redirect('/');
+            });
+
+        };
+
+    return {
+        init : init,
+        ensureAuth : ensureAuth
+    };
+
+})();
+
+
+
 // Configuration.
 app.set('view engine', 'html');
 app.engine('html', hbs.__express);
@@ -202,28 +290,38 @@ app.use(express.urlencoded());
 app.use(express.json());
 app.use(express.static('public'));
 app.use(cors());
+app.use(express.cookieParser());
+app.use(express.session({ secret: 'keyboard cat' }));
+app.use(express.methodOverride());
+app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+
+// TODO - Change to module.
+auth.init();
 
 // Routes.
-app.get('/', function(req, response){
+app.get('/', auth.ensureAuth, function(req, response){
 
     igramcollection.find().sort({ created_time : -1 })
         .toArray(function( err, results ){
-            response.render('contentitems', { contentitem : results } );
+            response.render('contentitems', { contentitem : results, user: req.user } );
         });
 });
 
-app.get('/checknew', function(req, response){
+app.get('/checknew', auth.ensureAuth, function(req, response){
 
+     // {  })
     getNewInstagrams()
         .then(function(insertednum){
-            response.render('checknew', { inserts : insertednum } );
+            response.render('checknew', { user: req.user, inserts : insertednum } );
         });
 
 });
 
-app.get('/cleardata', function(req, response){
+app.get('/cleardata', auth.ensureAuth, function(req, response){
 
-    response.render('removeall');
+    response.render('removeall', { user: req.user });
 
 });
 
@@ -237,6 +335,7 @@ app.get('/output.json', function(req, response){
 
 });
 
+
 // Get designers file on startup.
 var file = __dirname + '/designers.json';
 fs.readFile(file, 'utf8', function (err, data) {
@@ -246,6 +345,12 @@ fs.readFile(file, 'utf8', function (err, data) {
     }
     designers = JSON.parse(data);
 });
+
+app.post('/login',
+        passport.authenticate('local', { successRedirect: '/',
+            failureRedirect: '/login',
+        failureFlash: true })
+        );
 
 // sockets
 io.sockets.on('connection', function (socket) {
@@ -284,7 +389,6 @@ io.sockets.on('connection', function (socket) {
         data.tags.split(",").forEach(function(tag){
             console.log(tag.trim(),tag.trim().match(/^[a-zA-Z0-9_]*$/));
             if( tag.trim() && tag.trim().match(/^[a-zA-Z0-9_]*$/)){
-                console.log("passed");
                 tags.push(tag.trim());
             }
         });
@@ -296,6 +400,7 @@ io.sockets.on('connection', function (socket) {
                         console.log("Updated tags", err, items);
                     });
         }
+
     });
 
 });
