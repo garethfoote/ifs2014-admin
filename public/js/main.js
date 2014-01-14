@@ -57,6 +57,9 @@ $(function(){
         var $el = $(e.currentTarget);
         if( $el.hasClass("js-yes") ){
             socket.emit("removeall");
+            setTimeout(function(){
+                document.location = "/";
+            },1000);
         } else {
             document.location = "/";
         }
