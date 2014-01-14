@@ -116,6 +116,10 @@ function parseInstagramData( data ) {
             if( keylist.indexOf( key ) < 0 ){
                 delete fresh[i][key]
             }
+            // Convert time to integer.
+            if( key === "created_time" ){
+                fresh[i][key] = Number(fresh[i][key]);
+            }
         }
         // Add user_id here to makequerying eaiser.
         for(var key in designer ){
@@ -206,39 +210,65 @@ app.use(passport.session());
 
 auth.init();
 
-// Routes.
-app.get('/', auth.ensureAuth, function(req, response){
+/*
+app.get('/article/:id', function(req, res) {
+       var entry = blogEngine.getBlogEntry(req.params.id);
+       res.render('article',{title:entry.title, blog:entry});
+});
+*/ 
 
+// Routes.
+app.get('/', /*auth.ensureAuth,*/ function(req, response){
     igramcollection.find().sort({ created_time : -1 })
         .toArray(function( err, results ){
             response.render('contentitems', { contentitem : results, user: req.user } );
         });
 });
 
-app.get('/checknew', auth.ensureAuth, function(req, response){
+app.get('/date/:date/hash/:hash', /*auth.ensureAuth,*/ function(req, response){
 
-     // {  })
+    var d = {}, date = req.params.date,
+        year = date.substr(0,4),
+        month = Number(date.substr(4,2))-1,
+        day = date.substr(6,2),
+        startsec, endsec;
+
+    if( date.length !== 8 ){
+        response.render('message', { message : "Date must be 8 digits long in this format YYYYMMDD. Example: 1st January 2014 = 20140101", user: req.user } );
+        return;
+    }
+
+    d = new Date(year, month, day);
+    startsec = Number(d.getTime()/1000);
+    endsec = Number(startsec+(60*60*24));
+
+    var find = { created_time : { $gte : startsec, $lt : endsec }};
+
+    igramcollection.find(find)
+           .sort({ created_time : -1 })
+           .toArray(function( err, results ){
+                response.render('contentitems', { contentitem : results, user: req.user } );
+            });
+
+});
+
+app.get('/checknew', auth.ensureAuth, function(req, response){
     getNewInstagrams()
         .then(function(insertednum){
             response.render('checknew', { user: req.user, inserts : insertednum } );
         });
-
 });
 
 app.get('/cleardata', auth.ensureAuth, function(req, response){
-
     response.render('removeall', { user: req.user });
-
 });
 
 app.get('/output.json', function(req, response){
-
     igramcollection.find({ selected : true }).sort({ created_time : -1 })
         .toArray(function( err, results ){
             response.setHeader('Content-Type', 'application/json');
             response.end(JSON.stringify(results));
         });
-
 });
 
 // Authentication routes.
