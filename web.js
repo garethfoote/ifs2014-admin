@@ -25,6 +25,7 @@ MongoClient.connect(mongoURI, function(err, db) {
 
     db.collection("instagrams", function(err, res){
         igramcollection = res;
+        // updateInstagramData();
     });
 
 });
@@ -88,6 +89,47 @@ function getExistingData( results ) {
 
 }
 
+/* Currently unused */
+function updateInstagramData(){
+
+    var keylist = [
+            "location",
+            "tags",
+            "created_time",
+            "link",
+            "images",
+            "type",
+            "id",
+            "user",
+            "country",
+            "caption"
+        ],
+        updateids = [];
+
+    igramcollection.find().sort({ created_time : -1 })
+        .toArray(function( err, res ){
+            updateids.push(res.id);
+        });
+
+    // Clean data of unwanted key:vals.
+    while( i-- ){
+        for(var key in fresh[i]){
+            if( keylist.indexOf( key ) < 0 ){
+                delete fresh[i][key]
+            }
+            // Convert time to integer.
+            if( key === "created_time" ){
+                fresh[i][key] = Number(fresh[i][key]);
+            }
+        }
+        // Add user_id here to makequerying eaiser.
+        for(var key in designer ){
+            fresh[i][key] = designer[key];
+        }
+    }
+
+}
+
 function parseInstagramData( data ) {
 
     var deferred = Q.defer();
@@ -101,7 +143,8 @@ function parseInstagramData( data ) {
             "type",
             "id",
             "user",
-            "country"
+            "country",
+            "caption"
         ],
         existing = data.existing,
         fresh = data.fresh,
