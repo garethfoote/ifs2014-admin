@@ -98,9 +98,8 @@ textarea {
    ========================================================================== */
 
 
-
-
 .content-item {
+    font-size: 12px;
     width: 306px;
     float: left;
     margin: 10px 10px;
@@ -124,13 +123,16 @@ textarea {
     cursor: pointer;
 }
 
-.content-item__link {
-    display: block;
-    padding: 5px 0;
+.content-item__block {
+    margin-bottom: 5px;
+
+}
+
+.content-item__field {
     width: 100%;
 }
 
-.content-item__author {
+.content-item__link {
     display: block;
     padding: 5px 0;
     width: 100%;
@@ -169,9 +171,16 @@ textarea {
     border: blue solid 1px;
 }
 
+.label {
+    font-weight: bold;
+    font-size: 10px;
+}
 
-
-
+.value--large {
+    display: block;
+    height: 28px;
+    overflow-y: scroll;
+}
 
 
 

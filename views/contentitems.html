@@ -8,28 +8,45 @@
     data-created="{{created_time}}">
     <img class="content-item__image" src="{{images.low_resolution.url}}" />
     <div>
-        <a class="content-item__link" target="_blank" href="{{link}}">Original</a>
-        <span class="content-item__author">{{user.full_name}}</span>
+        <hr/>
         <form>
-            <!--
-            <div>
-                <span class="content-item__type-title">Type:</span>
-                <label for="content-item__type-studio">
-                    <input type="radio" name="type" value="studio" id="content-item_type-studio" />
-                    Studio
-                </label>
-                <label for="content-item__type-showcase">
-                    <input type="radio" name="content-item__type" value="showcase" id="content-item__type-showcase"  />
-                    Showcase
-                </label>
+            <div class="content-item__block">
+                <span class="label">Caption:</span>
+                <span class="value value--large">{{caption.text}}</span>
             </div>
-            -->
-            <div>
-                <span class="content-item__tags__title">Tags:</span>
-                <input data-item-id="{{id}}" class="content-item__tags" name="content-item__tags" type="text" value="{{#each custom_tags}}{{#if @last}}{{this}}{{else}}{{this}},{{/if}} {{/each}}" />
-                <span class="content-item__info">Comma separated</span>
+            <div class="content-item__block">
+                <span class="label">Custom caption:</span>
+                <input data-item-id="{{id}}"
+                        name="content-item__tags"
+                        class="content-item__field content-item__caption"
+                        value="{{custom_caption}}"
+                        type="text" />
+            </div>
+            <hr/>
+            <div class="content-item__block">
+                <span class="label">Original tags:</span>
+                <span class="value--large">{{#each tags}}{{this}},{{/each}}</span>
+            </div>
+            <div class="content-item__block">
+                <span class="label">Custom tags:</span>
+                <input data-item-id="{{id}}"
+                        name="content-item__tags"
+                        class="content-item__field content-item__tags"
+                        value="{{#each custom_tags}}{{#if @last}}{{this}}{{else}}{{this}},{{/if}} {{/each}}"
+                        type="text" />
+                <span class="content-item__info">Comma separated. No hash.</span>
             </div>
         </form>
+        <hr/>
+        <div class="content-item__block">
+            <span class="label">Full name / username:</span>
+            <span class="value">{{user.full_name}} / {{ user.username }}</span>
+        </div>
+        <div class="content-item__block">
+            <span class="label">Country:</span>
+            <span class="value">{{country}}</span>
+        </div>
+        <a target="_blank" href="{{link}}">Original</a>
     </div>
 </div>
 {{/each}}

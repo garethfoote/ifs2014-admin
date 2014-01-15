@@ -268,7 +268,7 @@ app.get('/', auth.ensureAuth, function(req, response){
         });
 });
 
-app.get('/date/:date/hash/:hash', auth.ensureAuth, function(req, response){
+app.get('/date/:date', auth.ensureAuth, function(req, response){
 
     var d = {}, date = req.params.date,
         year = date.substr(0,4),
@@ -376,8 +376,18 @@ io.sockets.on('connection', function (socket) {
 
     });
 
+    socket.on('caption', function (data) {
+        console.log("Update caption: " + data.id);
+
+        igramcollection.update({ id : data.id },
+                { $set: { custom_caption : data.caption }},
+                function(err, items){
+                    console.log("Caption udpated.", err, items);
+                });
+    });
+
     socket.on('tags', function (data) {
-        console.log("Select: " + data.id);
+        console.log("Update tags: " + data.id);
 
         var tags = [];
         data.tags.split(",").forEach(function(tag){
@@ -391,7 +401,7 @@ io.sockets.on('connection', function (socket) {
             igramcollection.update({ id : data.id },
                     { $set: { custom_tags : tags }},
                     function(err, items){
-                        console.log("Updated tags", err, items);
+                        console.log("Tags updated.", err, items);
                     });
         }
 

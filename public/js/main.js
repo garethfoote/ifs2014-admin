@@ -34,21 +34,33 @@ function handleBlur( e ){
         id = el.getAttribute('data-item-id'),
         value = el.value;
 
-    socket.emit('tags', { id : id, tags : value });
+    console.log(el.className, hasClass(el,"content-item__tags"));
+    if( ! hasClass(el,"content-item__tags") ){
+        socket.emit('caption', { id : id, caption : value });
+    } else {
+        socket.emit('tags', { id : id, tags : value });
+    }
 
+}
+
+function hasClass(ele,cls) {
+        return ele.className.match(new RegExp('(\\s|^)'+cls+'(\\s|$)'));
 }
 
 $(function(){
 
-    var ci = document.querySelectorAll('.content-item__image'),
-        inputs = document.querySelectorAll('.content-item__tags');
+    var ci = document.querySelectorAll('.content-item'),
+        img, tags, caption;
 
     for( var i=0; i < ci.length; i++ ){
 
-        var tags = ci[i].parentNode.querySelector(".content-item__tags");
+        img = ci[i].querySelector(".content-item__image");
+        tags = ci[i].querySelector(".content-item__tags");
+        caption = ci[i].querySelector(".content-item__caption");
 
-        ci[i].addEventListener("click", itemClickedHandler);
+        img.addEventListener("click", itemClickedHandler);
         tags.addEventListener("blur", handleBlur );
+        caption.addEventListener("blur", handleBlur );
 
     }
 
