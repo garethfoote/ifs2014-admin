@@ -13,16 +13,14 @@ function itemClickedHandler( e ){
     }
 
     var el = e.currentTarget.parentNode,
-        // type = document.getElementByName("content-item__type"),
         id = el.getAttribute('data-item-id');
 
-    // console.log( el, id,  el.className.match( classRegExp('isselected') ));
     if( ! el.className.match( classRegExp('isselected')) ){;
         el.className = el.className + " isselected";
         socket.emit('select',  id );
     } else {
         el.className = el.className.replace( classRegExp('isselected'), '' );
-        socket.emit('select',  id );
+        socket.emit('deselect',  id );
     }
 
 }
@@ -34,7 +32,6 @@ function handleBlur( e ){
         id = el.getAttribute('data-item-id'),
         value = el.value;
 
-    console.log(el.className, hasClass(el,"content-item__tags"));
     if( ! hasClass(el,"content-item__tags") ){
         socket.emit('caption', { id : id, caption : value });
     } else {
