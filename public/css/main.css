@@ -177,8 +177,9 @@ textarea {
 }
 
 .value--large {
+    line-height: 16px;
     display: block;
-    height: 28px;
+    height: 32px;
     overflow-y: scroll;
 }
 
