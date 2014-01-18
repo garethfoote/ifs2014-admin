@@ -55,9 +55,9 @@ $(function(){
         tags = ci[i].querySelector(".content-item__tags");
         caption = ci[i].querySelector(".content-item__caption");
 
-        img.addEventListener("click", itemClickedHandler);
-        tags.addEventListener("blur", handleBlur );
-        caption.addEventListener("blur", handleBlur );
+        $(img).on("click", itemClickedHandler);
+        $(tags).on("click", handleBlur);
+        $(caption).on("click", handleBlur);
 
     }
 
