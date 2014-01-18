@@ -47,8 +47,11 @@ function getRecentInstagram( designer ){
     console.log("Get recent Instagrams: "+ options.path);
 
     var req = https.request(options, function(res) {
-        console.log("statusCode: ", res.statusCode);
-        // console.log("headers: ", res.headers);
+        // console.log("statusCode: ", res.statusCode);
+        if( res.statusCode != "200" ){
+            // console.log("Problem requesting:", designer.name, options.path);
+            // console.log("headers: ", res.statusCode);
+        }
 
         var result = "";
 
@@ -57,14 +60,18 @@ function getRecentInstagram( designer ){
         });
         res.on('end', function () {
             var parsed = JSON.parse(result);
-            deferred.resolve({ results : parsed, designer : designer });
+            if( res.statusCode != "200" ){
+                deferred.reject(new Error("Error getting instagram feed. Status code:"+result));
+            } else {
+                deferred.resolve({ results : parsed, designer : designer });
+            }
         });
     });
     req.end();
 
     req.on('error', function(e) {
-          console.error(e);
-          deferred.reject(new Error(error));
+        console.error("Get IGRAM error:", e);
+        deferred.reject(new Error(error));
     });
 
     return deferred.promise;
@@ -152,7 +159,6 @@ function parseInstagramData( data ) {
         toinsert = [],
         i = fresh.length;
 
-
     // Clean data of unwanted key:vals.
     while( i-- ){
         for(var key in fresh[i]){
@@ -170,11 +176,17 @@ function parseInstagramData( data ) {
         }
     }
 
+    if( ! fresh[0].user ){
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>PROBLEMO2<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        console.log("Problemo", fresh[0].user );
+
+    }
+
     // Created array of items to insert.
     i = fresh.length;
     while( i-- ){
         if( ! existing.length || fresh[i].created_time > existing[0].created_time) {
-            console.log("insert", fresh[i].created_time);
+            // console.log("insert", fresh[i].created_time);
             toinsert.push( fresh[i] );
         }
     };
@@ -203,7 +215,7 @@ function getNewInstagrams(){
 
     var deferred = Q.defer();
 
-    var completenum = 0, insertedtotal = 0;
+    var completenum = 0, insertedtotal = 0, failednum = 0;
     for (var i = 0; i < designers.length; i++) {
 
         igramcollection.update({ ig_user_id : designers[i].ig_user_id },
@@ -212,23 +224,29 @@ function getNewInstagrams(){
                         console.log("Update designers");
                     });
 
+        console.log("Get", designers[i].name);
         getRecentInstagram( designers[i] )
             .then(getExistingData)
             .then(parseInstagramData)
             .then(function( inserted ){
 
                 completenum++;
+                console.log("Inserted", inserted, "Completed", completenum, "Designers", designers.length);
                 insertedtotal += inserted;
-                if( completenum == designers.length ){
+                if( completenum+failednum == designers.length ){
                     console.log("FINISHED ALL DESIGNERS");
-                    deferred.resolve( insertedtotal );
+                    deferred.resolve( {insertednum: insertedtotal, failednum : failednum });
                 }
 
             })
             .fail(function( err ){
 
-                console.log( err );
-                deferred.reject(new Error(err));
+                failednum++;
+                console.log( "Failed", failednum );
+                if( completenum+failednum == designers.length ){
+                    console.log("FINISHED ALL DESIGNERS");
+                    deferred.resolve( {insertednum: insertedtotal, failednum : failednum });
+                }
 
             });
 
@@ -253,13 +271,6 @@ app.use(passport.session());
 
 auth.init();
 
-/*
-app.get('/article/:id', function(req, res) {
-       var entry = blogEngine.getBlogEntry(req.params.id);
-       res.render('article',{title:entry.title, blog:entry});
-});
-*/ 
-
 // Routes.
 app.get('/', auth.ensureAuth, function(req, response){
     igramcollection.find().sort({ created_time : -1 })
@@ -268,7 +279,15 @@ app.get('/', auth.ensureAuth, function(req, response){
         });
 });
 
-app.get('/date/:date', auth.ensureAuth, function(req, response){
+app.get('/get/selected', auth.ensureAuth, function(req, response){
+    igramcollection.find({selected : true})
+           .sort({ created_time : -1 })
+           .toArray(function( err, results ){
+                response.render('contentitems', { contentitem : results, user: req.user } );
+            });
+});
+
+app.get('/get/date/:date', auth.ensureAuth, function(req, response){
 
     var d = {}, date = req.params.date,
         year = date.substr(0,4),
@@ -296,11 +315,30 @@ app.get('/date/:date', auth.ensureAuth, function(req, response){
 });
 
 app.get('/checknew', auth.ensureAuth, function(req, response){
+
     getNewInstagrams()
-        .then(function(insertednum){
-            response.render('checknew', { user: req.user, inserts : insertednum } );
+        .then(function(result){
+            response.render('checknew', { user: req.user, inserts : result.insertednum, failed : result.failednum} );
+        });
+/*
+    igramcollection.find().limit(0)
+        .toArray(function( err, results ){
+            var ts = (results.length > 0) ? results[0]._id.getTimestamp() : "Never";
+            response.render('checknew', { user: req.user, last: ts } );
+        });
+        */
+
+});
+
+
+/*
+app.get('/checknow', auth.ensureAuth, function(req, response){
+    getNewInstagrams()
+        .then(function(result){
+            response.render('checknewnow', { user: req.user, inserts : result.insertednum, failed : result.failednum} );
         });
 });
+*/
 
 app.get('/cleardata', auth.ensureAuth, function(req, response){
     response.render('removeall', { user: req.user });

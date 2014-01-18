@@ -150,6 +150,9 @@ textarea {
     height: 30px;
     margin: 0 auto;
     line-height: 30px;
+    color: black;
+    text-decoration: none;
+    border-radius: 5px;
 }
 
 .warning .js-yes:hover {
