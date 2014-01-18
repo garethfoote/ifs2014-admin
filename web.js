@@ -39,11 +39,11 @@ function getRecentInstagram( designer ){
     var options = {
         host: 'api.instagram.com',
         port: 443,
-        path: '/v1/users/{user_id}/media/recent/?client_id=efacd9d0e5844e73bb75f3f2b0ddf675',
+        path: '/v1/users/{ig_user_id}/media/recent/?client_id=efacd9d0e5844e73bb75f3f2b0ddf675',
         method: 'GET'
     };
 
-    options.path = options.path.replace(/{user_id}/, designer.user_id);
+    options.path = options.path.replace(/{ig_user_id}/, designer.ig_user_id);
     console.log("Get recent Instagrams: "+ options.path);
 
     var req = https.request(options, function(res) {
@@ -74,7 +74,7 @@ function getExistingData( results ) {
 
     var deferred = Q.defer();
 
-    igramcollection.find({ user_id : results.designer.user_id }).sort({ created_time : -1 })
+    igramcollection.find({ ig_user_id : results.designer.ig_user_id }).sort({ created_time : -1 })
         .toArray(function( err, res ){
             console.log("found", err);
             if( err != "null" ){
@@ -122,7 +122,7 @@ function updateInstagramData(){
                 fresh[i][key] = Number(fresh[i][key]);
             }
         }
-        // Add user_id here to makequerying eaiser.
+        // Add ig_user_id here to makequerying eaiser.
         for(var key in designer ){
             fresh[i][key] = designer[key];
         }
@@ -164,7 +164,7 @@ function parseInstagramData( data ) {
                 fresh[i][key] = Number(fresh[i][key]);
             }
         }
-        // Add user_id here to makequerying eaiser.
+        // Add ig_user_id here to makequerying eaiser.
         for(var key in designer ){
             fresh[i][key] = designer[key];
         }
@@ -206,7 +206,7 @@ function getNewInstagrams(){
     var completenum = 0, insertedtotal = 0;
     for (var i = 0; i < designers.length; i++) {
 
-        igramcollection.update({ user_id : designers[i].user_id },
+        igramcollection.update({ ig_user_id : designers[i].ig_user_id },
                     { $set: designers[i] }, { multi : true },
                     function(err, items){
                         console.log("Update designers");
