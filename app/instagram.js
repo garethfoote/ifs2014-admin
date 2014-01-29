@@ -24,8 +24,7 @@ function storenew( designer, existing, fresh ){
         toinsert = [],
         i;
 
-
-    fresh = fresh.value;
+    fresh = fresh.value.data;
     existing = existing.value;
 
     i = fresh.length;
@@ -52,7 +51,6 @@ function storenew( designer, existing, fresh ){
     i = fresh.length;
     while( i-- ){
         if( ! existing.length || fresh[i].created_time > existing[0].created_time) {
-            // console.log("insert", fresh[i].created_time);
             toinsert.push( fresh[i] );
         }
     };
@@ -77,6 +75,8 @@ function storenew( designer, existing, fresh ){
 
 }
 
+// https://api.instagram.com/v1/tags/studiotoshowcase/media/recent?access_token=1322341.f59def8.9289e878d98b4d16abe046d2b1714042
+
 function fetchlatest( userid ){
 
     var deferred = Q.defer();
@@ -91,7 +91,6 @@ function fetchlatest( userid ){
 
     options.path = options.path.replace(/{ig_user_id}/, userid);
 
-        console.log(options.path);
     var req = https.request(options, function(res) {
         // console.log("statusCode: ", res.statusCode);
         // console.log("headers: ", res.statusCode);
@@ -112,8 +111,8 @@ function fetchlatest( userid ){
     req.end();
 
     req.on('error', function(e) {
-        console.error("Get IGRAM error:", e);
         deferred.reject(new Error(error));
+        console.error("Get IGRAM error:", e);
     });
 
     return deferred.promise;
@@ -144,7 +143,6 @@ function updatedesigner( designer ){
     console.log("Get", designer.name);
 
     db.connect().then(function(){
-        console.log("Connected");
 
         Q.allSettled([
                 getexisting(designer.ig_user_id),
@@ -157,13 +155,12 @@ function updatedesigner( designer ){
             })
             .then(function( inserted ){
                 console.log("Inserted ", inserted, " for ", designer.name);
-
                 deferred.resolve( inserted );
 
             })
-            .fail(function(err){
+            .fail(function(){
 
-                console.log(err);
+                deferred.reject();
 
             });
 
@@ -180,6 +177,7 @@ function getnewinstagrams( designers ){
         insertstotal = 0;
 
     for (var i = 0; i < designers.length; i++) {
+
         console.log("Get new for ", designers[i].name);
 
         updatedesigner( designers[i] )
@@ -208,7 +206,7 @@ function getnewinstagrams( designers ){
 
 instagram.init = function( app, auth ){
 
-    app.get('/instagram/checknew', auth.ensureAuth, function(req, response){
+    app.get('/instagram/checknew/designers', /*auth.ensureAuth,*/ function(req, response){
 
         config.getdesigners()
             .then(function( designers ){
@@ -226,6 +224,13 @@ instagram.init = function( app, auth ){
 
     });
 
+    app.get('/instagram/checknew/hashtag/:hashtag', auth.ensureAuth, function(req, response){
+
+        var hastag = req.params.hashtag;
+
+        // response.render('checknew', { user: req, inserts : result.insertednum, failed : result.failednum });
+
+    });
 };
 
 
