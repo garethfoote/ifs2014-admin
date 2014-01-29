@@ -308,7 +308,7 @@ instagram.init = function( app, auth, io ){
 
     initsockets( io );
 
-    app.get('/instagram/checknew/designers', /*auth.ensureAuth,*/ function(req, response){
+    app.get('/instagram/checknew/designers', auth.ensureAuth,function(req, response){
 
         config.getdesigners()
             .then(function( designers ){
@@ -326,7 +326,7 @@ instagram.init = function( app, auth, io ){
 
     });
 
-    app.get('/instagram/checknew/hashtag/:hashtag', /* auth.ensureAuth, */ function(req, response){
+    app.get('/instagram/checknew/hashtag/:hashtag', auth.ensureAuth, function(req, response){
 
         var hashtag = req.params.hashtag;
 
