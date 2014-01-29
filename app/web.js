@@ -1,7 +1,7 @@
 // App modules.
 var config = require("./config"),
     db = require("./db"),
-    auth = require('./authme'),
+    auth = require('./auth'),
     instagram = require("./instagram");
 
 // Vendor modules.
