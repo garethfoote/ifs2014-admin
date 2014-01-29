@@ -7,7 +7,7 @@ var PRODUCTION = process.env.NODE_ENV === "production";
 
 config.designersjson = __dirname + "/data/designers.json";
 config.express = {
-      port: process.env.EXPRESS_PORT || 5000,
+      port: process.env.PORT || 5000,
       ip: "127.0.0.1"
 };
 
