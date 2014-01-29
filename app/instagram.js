@@ -5,7 +5,9 @@ var instagram = module.exports,
     Q = require('q'),
     db = require("./db");
 
-function storenew( designer, existing, fresh ){
+var hashtagdata = {};
+
+function storenew( existing, fresh, designer ){
 
     var deferred = Q.defer();
 
@@ -40,9 +42,11 @@ function storenew( designer, existing, fresh ){
                 fresh[i][key] = Number(fresh[i][key]);
             }
         }
-        // Add ig_user_id here to makequerying eaiser.
-        for(var key in designer ){
-            fresh[i][key] = designer[key];
+        if( designer ){
+            // Add ig_user_id here to makequerying eaiser.
+            for(var key in designer ){
+                fresh[i][key] = designer[key];
+            }
         }
         fresh[i].type = "instagram";
     }
@@ -75,21 +79,43 @@ function storenew( designer, existing, fresh ){
 
 }
 
-// https://api.instagram.com/v1/tags/studiotoshowcase/media/recent?access_token=1322341.f59def8.9289e878d98b4d16abe046d2b1714042
-
-function fetchlatest( userid ){
-
-    var deferred = Q.defer();
+function fetchhashtag( hashtag ){
 
     // Instagram API methods.
     var options = {
         host: 'api.instagram.com',
         port: 443,
-        path: '/v1/users/{ig_user_id}/media/recent/?client_id=efacd9d0e5844e73bb75f3f2b0ddf675',
+        path: '/v1/tags/{hashtag}/media/recent/?client_id='
+              + config.instagramclientid,
+        method: 'GET'
+    };
+
+    options.path = options.path.replace(/{hashtag}/, hashtag);
+
+    return makerequest( options );
+
+}
+
+function fetchlatest( userid ){
+
+    // Instagram API methods.
+    var options = {
+        host: 'api.instagram.com',
+        port: 443,
+        path: '/v1/users/{ig_user_id}/media/recent/?client_id='
+              + config.instagramclientid,
         method: 'GET'
     };
 
     options.path = options.path.replace(/{ig_user_id}/, userid);
+
+    return makerequest( options );
+
+}
+
+function makerequest( options ){
+
+    var deferred = Q.defer();
 
     var req = https.request(options, function(res) {
         // console.log("statusCode: ", res.statusCode);
@@ -111,8 +137,8 @@ function fetchlatest( userid ){
     req.end();
 
     req.on('error', function(e) {
-        deferred.reject(new Error(error));
         console.error("Get IGRAM error:", e);
+        deferred.reject(new Error("Get IGRAM error:" + e));
     });
 
     return deferred.promise;
@@ -150,7 +176,7 @@ function updatedesigner( designer ){
             ])
             .spread(function(existing, fresh){
 
-                return storenew( designer, existing, fresh );
+                return storenew( existing, fresh, designer );
 
             })
             .then(function( inserted ){
@@ -203,8 +229,84 @@ function getnewinstagrams( designers ){
     return deferred.promise;
 }
 
+function initsockets( io ){
 
-instagram.init = function( app, auth ){
+    // -- Sockets
+    io.sockets.on('connection', function (socket) {
+
+        socket.on('deselect', function (id) {
+            console.log("Deselect: " + id);
+            db.collection.update({ id : id },
+                        { $set: { selected : false }},
+                        function(err, items){
+                            console.log(err, items);
+                        });
+
+        });
+
+        socket.on('select', function (id) {
+            console.log("Select: " + id);
+            // console.log(hashtagdata[id]);
+
+            db.collection.count({ id : id }, function(err, count) {
+
+
+                if( count === 0 ){
+
+                    // storenew([], [hashtagdata[id]]);
+
+                } else {
+
+                    db.collection.update({ id : id },
+                                { $set: { selected : true }},
+                                function(err, items){
+                                    console.log("Updated", err, items);
+                                });
+
+                }
+
+            });
+
+        });
+
+        socket.on('caption', function (data) {
+            console.log("Update caption: " + data.id);
+
+            db.collection.update({ id : data.id },
+                    { $set: { custom_caption : data.caption }},
+                    function(err, items){
+                        console.log("Caption udpated.", err, items);
+                    });
+        });
+
+        socket.on('tags', function (data) {
+            console.log("Update tags: " + data.id);
+
+            var tags = [];
+            data.tags.split(",").forEach(function(tag){
+                console.log(tag.trim(),tag.trim().match(/^[a-zA-Z0-9_]*$/));
+                if( tag.trim() && tag.trim().match(/^[a-zA-Z0-9_]*$/)){
+                    tags.push(tag.trim());
+                }
+            });
+
+            if( tags.length ){
+                db.collection.update({ id : data.id },
+                        { $set: { custom_tags : tags }},
+                        function(err, items){
+                            console.log("Tags updated.", err, items);
+                        });
+            }
+
+        });
+
+    });
+
+}
+
+instagram.init = function( app, auth, io ){
+
+    initsockets( io );
 
     app.get('/instagram/checknew/designers', /*auth.ensureAuth,*/ function(req, response){
 
@@ -224,61 +326,24 @@ instagram.init = function( app, auth ){
 
     });
 
-    app.get('/instagram/checknew/hashtag/:hashtag', auth.ensureAuth, function(req, response){
+    app.get('/instagram/checknew/hashtag/:hashtag', /* auth.ensureAuth, */ function(req, response){
 
-        var hastag = req.params.hashtag;
+        var hashtag = req.params.hashtag;
 
-        // response.render('checknew', { user: req, inserts : result.insertednum, failed : result.failednum });
+        fetchhashtag(hashtag)
+            .then(function(results){
+
+                var data = results.data;
+                for (var i = 0; i < data.length; i++) {
+                    hashtagdata[data[i].id] = data[i];
+                };
+
+                response.render('contentitems', {
+                    user: req.user,
+                    contentitem : results.data
+                });
+
+            });
 
     });
 };
-
-
-/* Currently unused */
-function updateInstagramData(){
-
-    var keylist = [
-            "location",
-            "tags",
-            "created_time",
-            "link",
-            "images",
-            "type",
-            "id",
-            "user",
-            "country",
-            "caption"
-        ],
-        updateids = [];
-
-    db.collection.find().sort({ created_time : -1 })
-        .toArray(function( err, res ){
-            updateids.push(res.id);
-        });
-
-    // Clean data of unwanted key:vals.
-    while( i-- ){
-        for(var key in fresh[i]){
-            if( keylist.indexOf( key ) < 0 ){
-                delete fresh[i][key]
-            }
-            // Convert time to integer.
-            if( key === "created_time" ){
-                fresh[i][key] = Number(fresh[i][key]);
-            }
-        }
-        // Add ig_user_id here to makequerying eaiser.
-        for(var key in designer ){
-            fresh[i][key] = designer[key];
-        }
-    }
-
-}
-
-    /*
-        igramcollection.update({ ig_user_id : designers[i].ig_user_id },
-                    { $set: designers[i] }, { multi : true },
-                    function(err, items){
-                        console.log("Update designers");
-                    });
-                    */

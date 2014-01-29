@@ -6,6 +6,8 @@ var config = module.exports,
 var PRODUCTION = process.env.NODE_ENV === "production";
 
 config.designersjson = __dirname + "/data/designers.json";
+config.instagramclientid = "efacd9d0e5844e73bb75f3f2b0ddf675";
+
 config.express = {
       port: process.env.PORT || 5000,
       ip: "127.0.0.1"
