@@ -97,6 +97,9 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+.content-index {
+    padding: 0 0 0 20px;
+}
 
 .content-item {
     font-size: 12px;

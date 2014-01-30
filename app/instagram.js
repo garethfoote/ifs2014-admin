@@ -26,9 +26,6 @@ function storenew( existing, fresh, designer ){
         toinsert = [],
         i;
 
-    fresh = fresh.value.data;
-    existing = existing.value;
-
     i = fresh.length;
 
     // Clean data of unwanted key:vals.
@@ -145,15 +142,16 @@ function makerequest( options ){
 
 }
 
-function getexisting( userid ) {
+function getexisting( query ) {
 
     var deferred = Q.defer();
 
-    db.collection.find({ ig_user_id : userid }).sort({ created_time : -1 })
+    db.collection.find( query ).sort({ created_time : -1 })
         .toArray(function( err, res ){
             if( err != "null" ){
                 deferred.resolve( res );
             } else {
+                console.log("Error: find query error - " + err);
                 deferred.reject(new Error(err));
             }
         });
@@ -171,12 +169,12 @@ function updatedesigner( designer ){
     db.connect().then(function(){
 
         Q.allSettled([
-                getexisting(designer.ig_user_id),
+                getexisting({ ig_user_id : designer.ig_user_id }),
                 fetchlatest(designer.ig_user_id)
             ])
             .spread(function(existing, fresh){
 
-                return storenew( existing, fresh, designer );
+                return storenew( existing.value, fresh.value.data, designer );
 
             })
             .then(function( inserted ){
@@ -246,14 +244,14 @@ function initsockets( io ){
 
         socket.on('select', function (id) {
             console.log("Select: " + id);
-            // console.log(hashtagdata[id]);
+            var data = hashtagdata[id];
 
             db.collection.count({ id : id }, function(err, count) {
 
-
                 if( count === 0 ){
-
-                    // storenew([], [hashtagdata[id]]);
+                    data.selected = true;
+                    console.log("Store new", data);
+                    storenew([], [data]);
 
                 } else {
 
@@ -304,18 +302,155 @@ function initsockets( io ){
 
 }
 
+function get( route, app, auth, action ){
+
+    var doAuth = false;
+
+    if( doAuth === true ){
+        app.get(route, auth.ensureAuth, action);
+    } else {
+        app.get(route, action);
+    }
+
+}
+
 instagram.init = function( app, auth, io ){
 
     initsockets( io );
 
-    app.get('/instagram/checknew/designers', auth.ensureAuth,function(req, response){
+    // Links to other routes.
+    var instagramhome = function(req, response){
+
+        config.getdesigners()
+            .then(function(designers){
+
+                response.render('instagram', {
+                    user: req.user,
+                    designers : designers
+                });
+
+            });
+    };
+    get('/instagram', app, auth, instagramhome );
+
+    // Select single designer by id.
+    var selectdesigner = function(req, response){
+
+        var designerid = req.params.designerid,
+            query = { "user.id" : String( designerid ) };
+
+        getexisting(query)
+            .then(function(results){
+                response.render('contentitems', {
+                    contentitem : results, user: req.user
+                });
+            });
+
+    };
+    get('/instagram/select/designer/:designerid', app, auth, selectdesigner );
+
+    // Show all designers.
+    var selectdesigners = function(req, response){
+
+        config.getdesigners()
+            .then(function( designers ){
+
+                var userids = [];
+                for (var i = 0; i < designers.length; i++) {
+                    userids.push(String(designers[i].ig_user_id));
+                };
+
+                var query = {
+                    "user.id" : { $in : userids }
+                };
+
+                getexisting(query)
+                    .then(function(results){
+                        response.render('contentitems', {
+                            contentitem : results, user: req.user
+                        });
+                    });
+
+            });
+
+    };
+    get('/instagram/select/designers', app, auth, selectdesigners );
+
+    var selecthowforhashtag = function(req, response){
+
+        var hashtag = req.params.hashtag,
+            query = { tags : hashtag },
+            fresh, existing, existingids = [];
+
+        Q.allSettled([
+                fetchhashtag(hashtag),
+                getexisting(query)
+            ])
+            .spread(function(fresh, existing){
+
+                fresh = fresh.value.data;
+                existing = existing.value;
+                // console.log("Existing", existing);
+
+                // Get array of existing ids for easy searching.
+                for (var i = 0; i < existing.length; i++) {
+                    existingids.push( existing[i].id );
+                };
+
+                // Store fresh for possible insertion.
+                for (var j = 0; j < fresh.length; j++) {
+                    var freshid = fresh[j].id;
+                    hashtagdata[freshid] = fresh[j];
+
+                    // Add to existing array if not present.
+                    if( existingids.indexOf( freshid ) < 0 ){
+                        existing.push( hashtagdata[freshid] );
+                    }
+                };
+
+                response.render('contentitems', {
+                    user: req.user,
+                    contentitem : existing
+                });
+
+            })
+            .fail(function(err){
+                console.log(err);
+            });
+
+    };
+    get('/instagram/select/hashtag/:hashtag', app, auth, selecthowforhashtag );
+
+    // Show selected all (designers and others).
+    var showselected = function(req, response){
+
+        var query = {
+            selected : true
+        };
+
+        getexisting(query)
+            .then(function(results){
+                response.render('contentitems', {
+                    contentitem : results, user: req.user
+                });
+            });
+
+    };
+    get('/instagram/selected', app, auth, showselected );
+
+    // Retrieve new designers content.
+    var checkdesigners = function(req, response){
 
         config.getdesigners()
             .then(function( designers ){
 
                 getnewinstagrams( designers )
                     .then(function( result ){
-                        response.render('checknew', { user: req, inserts : result.insertednum, failed : result.failednum });
+                        response.render('checknew', {
+                            user: req.user,
+                            inserts : result.insertednum,
+                            failed : result.failednum
+                        });
 
                     });
             })
@@ -324,26 +459,7 @@ instagram.init = function( app, auth, io ){
 
             });
 
-    });
+    };
+    get('/instagram/checknew/designers', app, auth, checkdesigners );
 
-    app.get('/instagram/checknew/hashtag/:hashtag', auth.ensureAuth, function(req, response){
-
-        var hashtag = req.params.hashtag;
-
-        fetchhashtag(hashtag)
-            .then(function(results){
-
-                var data = results.data;
-                for (var i = 0; i < data.length; i++) {
-                    hashtagdata[data[i].id] = data[i];
-                };
-
-                response.render('contentitems', {
-                    user: req.user,
-                    contentitem : results.data
-                });
-
-            });
-
-    });
 };
