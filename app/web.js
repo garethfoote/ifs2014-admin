@@ -2,7 +2,8 @@
 var config = require("./config"),
     db = require("./db"),
     auth = require('./auth'),
-    instagram = require("./instagram");
+    instagram = require("./instagram"),
+    twitter = require("./twitter");
 
 // Vendor modules.
 var express = require('express'),
@@ -37,6 +38,7 @@ db.connect();
 auth.init();
 // Contains express routes and logic for retreiving content.
 instagram.init( app, auth, io );
+twitter.init( app, auth, io );
 
 // Routes.
 app.get('/', auth.ensureAuth, function(req, response){

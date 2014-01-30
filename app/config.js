@@ -7,6 +7,10 @@ var PRODUCTION = process.env.NODE_ENV === "production";
 
 config.designersjson = __dirname + "/data/designers.json";
 config.instagramclientid = "efacd9d0e5844e73bb75f3f2b0ddf675";
+config.twitterckey = process.env.twitterckey;
+config.twittercsecret = process.env.twittercsecret;
+config.twitteratoken = process.env.twitteratoken;
+config.twitterasecret = process.env.twitterasecret;
 
 config.express = {
       port: process.env.PORT || 5000,
