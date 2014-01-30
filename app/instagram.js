@@ -362,7 +362,7 @@ instagram.init = function( app, auth, io ){
 
                     db.collection.update({ "user.id" : userid },
                             { $set: set },
-                            { $multi : true },
+                            { multi : true },
                             function(err, items){
                                 designersupdated++;
                                 contentupdated += items;
@@ -383,9 +383,9 @@ instagram.init = function( app, auth, io ){
 
     var setalltype = function(req, response){
 
-        db.collection.update({},
+        db.collection.update({ type : { $ne : "instagram" }},
                     { $set: { type : "instagram" }},
-                    { $multi : true },
+                    { multi : true },
                     function(err, items){
                         response.render('message', {
                             message : "Updated:"+ items,
