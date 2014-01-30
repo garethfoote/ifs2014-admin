@@ -145,6 +145,7 @@ function makerequest( options ){
 function getexisting( query ) {
 
     var deferred = Q.defer();
+    query.type = "instagram";
 
     db.collection.find( query ).sort({ created_time : -1 })
         .toArray(function( err, res ){
@@ -314,6 +315,8 @@ function get( route, app, auth, action ){
 
 }
 
+
+
 instagram.init = function( app, auth, io ){
 
     initsockets( io );
@@ -332,6 +335,66 @@ instagram.init = function( app, auth, io ){
             });
     };
     get('/instagram', app, auth, instagramhome );
+
+    var updatefromdesigners = function(req, response){
+
+        config.getdesigners()
+            .then(function(designers){
+
+                var allowedkeys = [
+                        "name",
+                        "country",
+                        "home",
+                        "venue"
+                    ],
+                    contentupdated = 0,
+                    designersupdated = 0;
+
+                for (var i = 0; i < designers.length; i++) {
+                    var userid = String(designers[i].ig_user_id),
+                        set = {}, key;
+
+                    // Create "set" object for update.
+                    for (var j = 0; j < allowedkeys.length; j++) {
+                        key = allowedkeys[j];
+                        set[key] = designers[i][key];
+                    };
+
+                    db.collection.update({ "user.id" : userid },
+                            { $set: set },
+                            { $multi : true },
+                            function(err, items){
+                                designersupdated++;
+                                contentupdated += items;
+                                if( designersupdated === designers.length ){
+                                    response.render('message', {
+                                        message : "Updated "+ contentupdated + " items",
+                                        user: req.user
+                                    });
+                                }
+
+                            });
+                };
+
+            });
+
+    };
+    get('/designers/update', app, auth, updatefromdesigners );
+
+    var setalltype = function(req, response){
+
+        db.collection.update({},
+                    { $set: { type : "instagram" }},
+                    { $multi : true },
+                    function(err, items){
+                        response.render('message', {
+                            message : "Updated:"+ items,
+                            user: req.user
+                        });
+                    });
+
+    };
+    get('/instagram/setalltype', app, auth, setalltype );
 
     // Select single designer by id.
     var selectdesigner = function(req, response){

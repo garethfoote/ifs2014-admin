@@ -22,7 +22,7 @@
     {
         "name": "Gemma Williams",
         "ig_user_id": 589408349,
-        "twitter_id": "",
+        "twitter_id": "471997041",
         "country": "Vietnam",
         "home": {
             "latitude": "51.544840",
@@ -36,7 +36,7 @@
     {
         "name": "HOUSE OF WELLU",
         "ig_user_id": 372452972,
-        "twitter_id": "",
+        "twitter_id": "1495337516",
         "country": "Tanzania",
         "home": {
             "latitude": "51.497202",
@@ -50,7 +50,7 @@
     {
         "name": "SHERIA NGOWI",
         "ig_user_id": 254994508,
-        "twitter_id": "",
+        "twitter_id": "135419146",
         "country": "Tanzania",
         "home": {
             "latitude": "-6.822921",
@@ -62,9 +62,37 @@
         }
     },
     {
+        "name": "ODD IS BOLD",
+        "ig_user_id": "",
+        "twitter_id": "704975144",
+        "country": "Tanzania",
+        "home": {
+            "latitude": "63.430515",
+            "longitude": "10.395053"
+        },
+        "venue": {
+            "latitude": "51.514766",
+            "longitude": "-0.148897"
+        }
+    },
+    {
+        "name": "Mija Haute Couture",
+        "ig_user_id": "",
+        "twitter_id": "2212287056",
+        "country": "Tanzania",
+        "home": {
+            "latitude": "52.406822",
+            "longitude": "-1.519693"
+        },
+        "venue": {
+            "latitude": "51.514766",
+            "longitude": "-0.148897"
+        }
+    },
+    {
         "name": "Lizzie Glendinning",
         "ig_user_id": 416102193,
-        "twitter_id": "",
+        "twitter_id": "267153427",
         "country": "Tanzania",
         "home": {
             "latitude": "51.506980",
@@ -78,7 +106,7 @@
     {
         "name": "Tanzania High Commission",
         "ig_user_id": 989110394,
-        "twitter_id": "",
+        "twitter_id": "2288160076",
         "country": "Tanzania",
         "home": {
             "latitude": "51.514748",
@@ -92,7 +120,7 @@
     {
         "name": "Julian Zigerli",
         "ig_user_id": 295172720,
-        "twitter_id": "",
+        "twitter_id": "506420881",
         "country": "Switzerland",
         "home": {
             "latitude": "47.36865",
@@ -118,7 +146,7 @@
         }
     },
     {
-        "name": "AurÃ©lie Sutter",
+        "name": "Aurélie Sutter",
         "ig_user_id": 43001786,
         "twitter_id": "",
         "country": "Switzerland",
@@ -134,7 +162,7 @@
     {
         "name": "Yannick Aellen",
         "ig_user_id": 329615976,
-        "twitter_id": "",
+        "twitter_id": "700589546",
         "country": "Switzerland",
         "home": {
             "latitude": "47.372925",
@@ -146,9 +174,79 @@
         }
     },
     {
+        "name": "Marc Stone",
+        "ig_user_id": "",
+        "twitter_id": "1704294985",
+        "country": "Switzerland",
+        "home": {
+            "latitude": "47.371646",
+            "longitude": "8.536677"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Little Black Dress",
+        "ig_user_id": 401573887,
+        "twitter_id": "53736100",
+        "country": "Switzerland",
+        "home": {
+            "latitude": "47.371937",
+            "longitude": "8.537536"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "HEAD Genève",
+        "ig_user_id": "",
+        "twitter_id": "5835240195",
+        "country": "Switzerland",
+        "home": {
+            "latitude": "46.198392",
+            "longitude": "6.142296"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Julia Winkler",
+        "ig_user_id": "",
+        "twitter_id": "904634826",
+        "country": "Switzerland",
+        "home": {
+            "latitude": "51.544652",
+            "longitude": "-0.026044"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Griesbach",
+        "ig_user_id": 653154202,
+        "twitter_id": "603924354",
+        "country": "Switzerland",
+        "home": {
+            "latitude": "47.499950",
+            "longitude": "8.737565"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
         "name": "Ioana Ciolacu",
         "ig_user_id": 269135531,
-        "twitter_id": "",
+        "twitter_id": "225050288",
         "country": "Romania",
         "home": {
             "latitude": "44.4325",
@@ -162,7 +260,7 @@
     {
         "name": "Cristina Sabaiduc",
         "ig_user_id": 399405314,
-        "twitter_id": "",
+        "twitter_id": "295671038",
         "country": "Romania",
         "home": {
             "latitude": "51.513550",
@@ -176,7 +274,7 @@
     {
         "name": "Tilde Bay Kristoffersen",
         "ig_user_id": 446937386,
-        "twitter_id": "",
+        "twitter_id": "1662069378",
         "country": "Denmark",
         "home": {
             "latitude": "55.676097",
@@ -188,7 +286,7 @@
         }
     },
     {
-        "name": " Mari Heiret",
+        "name": "Mari Heiret",
         "ig_user_id": 284855602,
         "twitter_id": "",
         "country": "Norway",
@@ -204,8 +302,8 @@
     {
         "name": "THERE ARE MANY OF US",
         "ig_user_id": 395694571,
-        "twitter_id": "",
-        "country": "Québec, Canada",
+        "twitter_id": "2208410396",
+        "country": "QuÃ©bec, Canada",
         "home": {
             "latitude": "45.501053",
             "longitude": "-73.553638"
@@ -216,9 +314,9 @@
         }
     },
     {
-        "name": "MÃ©lissa Nepton",
+        "name": "Mélissa Nepton",
         "ig_user_id": 27625083,
-        "twitter_id": "",
+        "twitter_id": "117194593",
         "country": "Québec, Canada",
         "home": {
             "latitude": "45.506287",
@@ -232,7 +330,7 @@
     {
         "name": "Pedram Karimi",
         "ig_user_id": 195620015,
-        "twitter_id": "",
+        "twitter_id": "429270083",
         "country": "Québec, Canada",
         "home": {
             "latitude": "45.516933",
@@ -246,7 +344,7 @@
     {
         "name": "Breed Knitting",
         "ig_user_id": 525402460,
-        "twitter_id": "",
+        "twitter_id": "518172003",
         "country": "Québec, Canada",
         "home": {
             "latitude": "45.50867",
@@ -258,9 +356,23 @@
         }
     },
     {
+        "name": "Anastasia Radevich",
+        "ig_user_id": "",
+        "twitter_id": "120688756",
+        "country": "Québec, Canada",
+        "home": {
+            "latitude": "45.533890",
+            "longitude": "-73.593121"
+        },
+        "venue": {
+            "latitude": "51.505521",
+            "longitude": "-0.137433"
+        }
+    },
+    {
         "name": "Paula Ledesma",
         "ig_user_id": 24255620,
-        "twitter_id": "",
+        "twitter_id": "205835838",
         "country": "Argentina",
         "home": {
             "latitude": "-34.603723",
@@ -274,7 +386,7 @@
     {
         "name": "Bossini Pithod",
         "ig_user_id": 787337827,
-        "twitter_id": "",
+        "twitter_id": "577761042",
         "country": "Argentina",
         "home": {
             "latitude": "-27.78442",
@@ -288,7 +400,7 @@
     {
         "name": "Lucas Sanchez Calzado",
         "ig_user_id": 334596013,
-        "twitter_id": "",
+        "twitter_id": "1296844615",
         "country": "Argentina",
         "home": {
             "latitude": "-34.608345",
@@ -302,7 +414,7 @@
     {
         "name": "Gonzalo Villamax",
         "ig_user_id": 283648455,
-        "twitter_id": "",
+        "twitter_id": "47114735",
         "country": "Argentina",
         "home": {
             "latitude": "-26.808285",
@@ -314,9 +426,93 @@
         }
     },
     {
+        "name": "Li Torres",
+        "ig_user_id": "",
+        "twitter_id": "1088907685",
+        "country": "Argentina",
+        "home": {
+            "latitude": "-34.6469075",
+            "longitude": "-58.422546"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Kalu Gryb",
+        "ig_user_id": "",
+        "twitter_id": "1166434890",
+        "country": "Argentina",
+        "home": {
+            "latitude": "-27.451656",
+            "longitude": "-58.986252"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Luz Ballestero",
+        "ig_user_id": "",
+        "twitter_id": "332348831",
+        "country": "Argentina",
+        "home": {
+            "latitude": "-34.631654",
+            "longitude": "-58.470268"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Quier",
+        "ig_user_id": "",
+        "twitter_id": "149350447",
+        "country": "Argentina",
+        "home": {
+            "latitude": "-31.632389",
+            "longitude": "-60.699459"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Las Pablo",
+        "ig_user_id": "",
+        "twitter_id": "194170174",
+        "country": "Argentina",
+        "home": {
+            "latitude": "-37.895659",
+            "longitude": "-65.095779"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Nev Tejidos",
+        "ig_user_id": "",
+        "twitter_id": "1467948036",
+        "country": "Argentina",
+        "home": {
+            "latitude": "-34.744152",
+            "longitude": "-58.434906"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
         "name": "GON",
         "ig_user_id": 465380442,
-        "twitter_id": "",
+        "twitter_id": "489356086",
         "country": "Austria",
         "home": {
             "latitude": "48.208174",
@@ -330,11 +526,25 @@
     {
         "name": "Austrianfashion.net",
         "ig_user_id": 1346246,
-        "twitter_id": "",
+        "twitter_id": "116417591",
         "country": "Austria",
         "home": {
             "latitude": "48.208202",
             "longitude": "16.366882"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Femme Maison",
+        "ig_user_id": "",
+        "twitter_id": "1242539480",
+        "country": "Austria",
+        "home": {
+            "latitude": "48.226102",
+            "longitude": "16.358471"
         },
         "venue": {
             "latitude": "51.512421",
@@ -358,7 +568,7 @@
     {
         "name": "Barbara Cassasola",
         "ig_user_id": 193862816,
-        "twitter_id": "",
+        "twitter_id": "581041746",
         "country": "Brazil",
         "home": {
             "latitude": "51.513256",
@@ -372,7 +582,7 @@
     {
         "name": "Fernando Jorge",
         "ig_user_id": 15878958,
-        "twitter_id": "",
+        "twitter_id": "486989932",
         "country": "Brazil",
         "home": {
             "latitude": "51.512081",
@@ -386,11 +596,25 @@
     {
         "name": "Vitorino Campos",
         "ig_user_id": 144250612,
-        "twitter_id": "",
+        "twitter_id": "72590744",
         "country": "Brazil",
         "home": {
             "latitude": "-23.55052",
             "longitude": "-46.633309"
+        },
+        "venue": {
+            "latitude": "51.50765",
+            "longitude": "-0.130452"
+        }
+    },
+    {
+        "name": "Lucas Nascimento",
+        "ig_user_id": "",
+        "twitter_id": "498927066",
+        "country": "Brazil",
+        "home": {
+            "latitude": "51.547936",
+            "longitude": "-0.042572"
         },
         "venue": {
             "latitude": "51.50765",
@@ -412,9 +636,9 @@
         }
     },
     {
-        "name": "DÃ³ri TomcsÃ¡nyi",
+        "name": "Dóri Tomcsányi",
         "ig_user_id": 4762659,
-        "twitter_id": "",
+        "twitter_id": "752984107",
         "country": "Hungary",
         "home": {
             "latitude": "47.501837",
@@ -433,6 +657,62 @@
         "home": {
             "latitude": "47.506070",
             "longitude": "19.058189"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Gaspar Bonta",
+        "ig_user_id": "",
+        "twitter_id": "124235529",
+        "country": "Hungary",
+        "home": {
+            "latitude": "47.506418",
+            "longitude": "19.061623"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Gaspar Bonta",
+        "ig_user_id": "",
+        "twitter_id": "124235529",
+        "country": "Czech Republic",
+        "home": {
+            "latitude": "47.506418",
+            "longitude": "19.061623"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Gaspar Bonta",
+        "ig_user_id": "",
+        "twitter_id": "124235529",
+        "country": "Slovakia",
+        "home": {
+            "latitude": "47.506418",
+            "longitude": "19.061623"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Agnes Bendsák",
+        "ig_user_id": "",
+        "twitter_id": "380257280",
+        "country": "Slovakia",
+        "home": {
+            "latitude": "47.496908",
+            "longitude": "19.009781"
         },
         "venue": {
             "latitude": "51.512421",
@@ -468,13 +748,27 @@
         }
     },
     {
-        "name": "Lucie JelÃ­nkovÃ¡, Monika NovÃ¡kovÃ¡",
+        "name": " Lucie Jelínková, Monika Nováková",
         "ig_user_id": 392416284,
         "twitter_id": "",
         "country": "Czech Republic",
         "home": {
             "latitude": "50.081544",
             "longitude": "14.441957"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Pavel Berky",
+        "ig_user_id": "",
+        "twitter_id": "2276233044",
+        "country": "Czech Republic",
+        "home": {
+            "latitude": "50.087162",
+            "longitude": "14.461956"
         },
         "venue": {
             "latitude": "51.512421",
@@ -489,6 +783,62 @@
         "home": {
             "latitude": "51.523271",
             "longitude": "-0.112610"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Xue Li",
+        "ig_user_id": "",
+        "twitter_id": "16008867",
+        "country": "China",
+        "home": {
+            "latitude": "51.504682",
+            "longitude": "-0.213890"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Octavia Yang",
+        "ig_user_id": 1012512096,
+        "twitter_id": "280238041",
+        "country": "China",
+        "home": {
+            "latitude": "51.523484",
+            "longitude": "-0.211830"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Octo Cheung",
+        "ig_user_id": 45298231,
+        "twitter_id": "2141864594",
+        "country": "China",
+        "home": {
+            "latitude": "51.537687",
+            "longitude": "-0.072269"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Du Yang",
+        "ig_user_id": 556588164,
+        "twitter_id": "",
+        "country": "China",
+        "home": {
+            "latitude": "51.525513",
+            "longitude": "-0.016651"
         },
         "venue": {
             "latitude": "51.512421",
@@ -515,8 +865,36 @@
         "twitter_id": "",
         "country": "Estonia",
         "home": {
-            "latitude": "58.380685",
+            "latitude": "58.375753",
             "longitude": "26.725015"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Sille Scheckmann",
+        "ig_user_id": "",
+        "twitter_id": "1611261324",
+        "country": "Estonia",
+        "home": {
+            "latitude": "58.380685",
+            "longitude": "26.716433"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Hannes Praks Studio",
+        "ig_user_id": "",
+        "twitter_id": "242653706",
+        "country": "Estonia",
+        "home": {
+            "latitude": "59.438922",
+            "longitude": "24.745417"
         },
         "venue": {
             "latitude": "51.512421",
@@ -538,9 +916,107 @@
         }
     },
     {
+        "name": "Lasha Devdariani",
+        "ig_user_id": "",
+        "twitter_id": "2203962294",
+        "country": "Georgia",
+        "home": {
+            "latitude": "41.697975",
+            "longitude": "44.780016"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Maka Kakashvili",
+        "ig_user_id": "",
+        "twitter_id": "512322828",
+        "country": "Georgia",
+        "home": {
+            "latitude": "41.710054",
+            "longitude": "44.773278"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Mariam Makharadze",
+        "ig_user_id": "",
+        "twitter_id": "2186189375",
+        "country": "Georgia",
+        "home": {
+            "latitude": "41.715244",
+            "longitude": "44.780316"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Marita Mamuchashvili",
+        "ig_user_id": "",
+        "twitter_id": "2201202091",
+        "country": "Georgia",
+        "home": {
+            "latitude": "41.717294",
+            "longitude": "44.791217"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Lana Verulashvili",
+        "ig_user_id": "",
+        "twitter_id": "2211421711",
+        "country": "Georgia",
+        "home": {
+            "latitude": "41.713642",
+            "longitude": "44.795165"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Nino Sepiashvili",
+        "ig_user_id": "",
+        "twitter_id": "1163314412",
+        "country": "Georgia",
+        "home": {
+            "latitude": "41.710374",
+            "longitude": "44.797826"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Tbilisi State Academy of Arts",
+        "ig_user_id": "",
+        "twitter_id": "2199443815",
+        "country": "Georgia",
+        "home": {
+            "latitude": "41.701438",
+            "longitude": "44.792908"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
         "name": "Takahashi Atsuki",
         "ig_user_id": 214102394,
-        "twitter_id": "",
+        "twitter_id": "412905441",
         "country": "Japan",
         "home": {
             "latitude": "35.689487",
@@ -566,6 +1042,34 @@
         }
     },
     {
+        "name": "Kansai Yamamoto",
+        "ig_user_id": "",
+        "twitter_id": "136197983",
+        "country": "Japan",
+        "home": {
+            "latitude": "35.628280",
+            "longitude": "139.699402"
+        },
+        "venue": {
+            "latitude": "51.50538",
+            "longitude": "-0.14615"
+        }
+    },
+    {
+        "name": "Yoshikazu Yamagata",
+        "ig_user_id": "",
+        "twitter_id": "112100958",
+        "country": "Japan",
+        "home": {
+            "latitude": "35.730907",
+            "longitude": "139.946594"
+        },
+        "venue": {
+            "latitude": "51.50538",
+            "longitude": "-0.14615"
+        }
+    },
+    {
         "name": "Chloe Kim",
         "ig_user_id": 279126793,
         "twitter_id": "",
@@ -582,7 +1086,7 @@
     {
         "name": "Rejina Pyo",
         "ig_user_id": 11608906,
-        "twitter_id": "",
+        "twitter_id": "132234505",
         "country": "Korea",
         "home": {
             "latitude": "51.527222",
@@ -596,7 +1100,7 @@
     {
         "name": "Crystal Deroche",
         "ig_user_id": 176806465,
-        "twitter_id": "",
+        "twitter_id": "160963784",
         "country": "Nigeria",
         "home": {
             "latitude": "51.526154",
@@ -610,7 +1114,7 @@
     {
         "name": "Orange Culture",
         "ig_user_id": 200557745,
-        "twitter_id": "",
+        "twitter_id": "91432071",
         "country": "Nigeria",
         "home": {
             "latitude": "6.441797",
@@ -624,7 +1128,7 @@
     {
         "name": "Sholly Jaay",
         "ig_user_id": 629148088,
-        "twitter_id": "",
+        "twitter_id": "560010126",
         "country": "Nigeria",
         "home": {
             "latitude": "6.445891",
@@ -638,7 +1142,7 @@
     {
         "name": "Bridget Awosika",
         "ig_user_id": 220281287,
-        "twitter_id": "",
+        "twitter_id": "236441394",
         "country": "Nigeria",
         "home": {
             "latitude": "6.448450",
@@ -652,7 +1156,7 @@
     {
         "name": "Republic of Foreigner",
         "ig_user_id": 258077174,
-        "twitter_id": "",
+        "twitter_id": "255166895",
         "country": "Nigeria",
         "home": {
             "latitude": "6.441158",
@@ -666,7 +1170,7 @@
     {
         "name": "Anita Quansah London",
         "ig_user_id": 603662421,
-        "twitter_id": "",
+        "twitter_id": "45587424",
         "country": "Nigeria",
         "home": {
             "latitude": "51.520493",
@@ -680,7 +1184,7 @@
     {
         "name": "Nosakhari",
         "ig_user_id": 176559445,
-        "twitter_id": "",
+        "twitter_id": "549195262",
         "country": "Nigeria",
         "home": {
             "latitude": "51.506606",
@@ -706,9 +1210,23 @@
         }
     },
     {
+        "name": "High Commission For Pakistan",
+        "ig_user_id": "",
+        "twitter_id": "2228443628",
+        "country": "Pakistan",
+        "home": {
+            "latitude": "51.499548",
+            "longitude": "7-0.159008"
+        },
+        "venue": {
+            "latitude": "51.499548",
+            "longitude": "-0.159008"
+        }
+    },
+    {
         "name": "Ilse Jara",
         "ig_user_id": 184619500,
-        "twitter_id": "",
+        "twitter_id": "140266182",
         "country": "Paraguay",
         "home": {
             "latitude": "-25.282197",
@@ -720,9 +1238,9 @@
         }
     },
     {
-        "name": "Astrid Poletti ",
+        "name": "Astrid Poletti",
         "ig_user_id": 36737131,
-        "twitter_id": "",
+        "twitter_id": "63194954",
         "country": "Paraguay",
         "home": {
             "latitude": "25.788969",
@@ -734,9 +1252,23 @@
         }
     },
     {
+        "name": "Iciar Bravo",
+        "ig_user_id": "",
+        "twitter_id": "213006170",
+        "country": "Paraguay",
+        "home": {
+            "latitude": "-25.279898",
+            "longitude": "-57.640157"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
         "name": "Tipay Caintic",
         "ig_user_id": 49180935,
-        "twitter_id": "",
+        "twitter_id": "379034513",
         "country": "Philippines",
         "home": {
             "latitude": "14.554729",
@@ -748,9 +1280,9 @@
         }
     },
     {
-        "name": "Olivia dâ€™Aboville",
+        "name": "Olivia d’Aboville",
         "ig_user_id": 908028384,
-        "twitter_id": "",
+        "twitter_id": "550605401",
         "country": "Philippines",
         "home": {
             "latitude": "14.599988",
@@ -764,7 +1296,7 @@
     {
         "name": "Ken Samudio",
         "ig_user_id": 243600354,
-        "twitter_id": "",
+        "twitter_id": "79886267",
         "country": "Philippines",
         "home": {
             "latitude": "14.600902",
@@ -792,11 +1324,67 @@
     {
         "name": "Jun Artajo Apparel",
         "ig_user_id": 4323416,
-        "twitter_id": "",
+        "twitter_id": "90123419",
         "country": "Philippines",
         "home": {
             "latitude": "7.133598",
             "longitude": "125.793457"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Adante Leyesa",
+        "ig_user_id": "",
+        "twitter_id": "340228956",
+        "country": "Philippines",
+        "home": {
+            "latitude": "14.605470",
+            "longitude": "120.983634"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Debaj",
+        "ig_user_id": 240696157,
+        "twitter_id": "308995139",
+        "country": "Qatar",
+        "home": {
+            "latitude": "25.278772",
+            "longitude": "51.545534"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Fathiya Al Jaber",
+        "ig_user_id": 197538909,
+        "twitter_id": "355397942",
+        "country": "Qatar",
+        "home": {
+            "latitude": "25.287620",
+            "longitude": "51.504335"
+        },
+        "venue": {
+            "latitude": "51.512421",
+            "longitude": "-0.11511"
+        }
+    },
+    {
+        "name": "Darz",
+        "ig_user_id": 229288532,
+        "twitter_id": "198267628",
+        "country": "Qatar",
+        "home": {
+            "latitude": "25.280282",
+            "longitude": "51.522476"
         },
         "venue": {
             "latitude": "51.512421",
