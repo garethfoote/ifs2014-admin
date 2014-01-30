@@ -119,6 +119,14 @@ function storenew( existing, fresh, designer ){
         }
         delete fresh[i]["entities"];
 
+        if (!fresh[i]["images"]) {
+            fresh[i]["images"] = false;
+        }
+
+        if (!fresh[i]["location"]) {
+            fresh[i]["location"] = null;
+        }
+
         fresh[i]["caption"] = {text: fresh[i]["text"]};
         delete fresh[i]["text"];
     }
