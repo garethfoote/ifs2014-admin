@@ -1,0 +1,23 @@
+<div class="content-index">
+    <div class="selected">
+        <h3>Selected</h3>
+        <a href="/instagram/selected">Show all selected</a>
+    </div>
+
+    <div class="hashtags">
+        <h3>Hashtags</h3>
+        Select from hashtag: <input type="text" class="js-hashtag" name="hastags__hashtag" value="" placeholder="e.g. studiotoshowcase">
+        <button type="button" class="js-addhash" data-href="/instagram/select/hashtag/">Go</button>
+    </div>
+
+    <div class="designers">
+        <h3>Designers</h3>
+        <a href="/instagram/checknew/designers">Check new designers</a><span class="information"> (Use this to check for new  content from designers)</span>
+        <ul class="designers__select">
+            <li><a href="/instagram/select/designers">All</a></li>
+        {{#each designers}}
+        <li><a href="/instagram/select/designer/{{ig_user_id}}">{{name}}</a> ({{country}})</li>
+        {{/each}}
+        </ul>
+    </div>
+</div>

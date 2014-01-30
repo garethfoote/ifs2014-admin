@@ -95,7 +95,9 @@ app.get('/output.json', function(req, response){
 
 // Authentication routes.
 app.get('/login', function(req, res){
-      res.render('login', { user: req.user, message: req.flash('error') });
+      res.render('login', { 
+          user: req.user, message: req.flash('error') 
+      });
 });
 
 app.get('/logout', function(req, res){
@@ -104,7 +106,9 @@ app.get('/logout', function(req, res){
 });
 
 app.post('/login', 
-        passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }),
+        passport.authenticate('local', { 
+            failureRedirect: '/login', failureFlash: true 
+        }),
         function(req, res) {
             res.redirect('/');
 });

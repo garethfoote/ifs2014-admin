@@ -46,14 +46,14 @@ function hasClass(ele,cls) {
 
 $(function(){
 
-    var ci = document.querySelectorAll('.content-item'),
+    var ci = $('.content-item'),
         img, tags, caption;
 
     for( var i=0; i < ci.length; i++ ){
 
-        img = ci[i].querySelector(".content-item__image");
-        tags = ci[i].querySelector(".content-item__tags");
-        caption = ci[i].querySelector(".content-item__caption");
+        img = $(".content-item__image", ci[i]);
+        tags = $(".content-item__tags", ci[i]);
+        caption = $(".content-item__caption", ci[i]);
 
         $(img).on("click", itemClickedHandler);
         $(tags).on("click", handleBlur);
@@ -71,6 +71,18 @@ $(function(){
             },1000);
         } else {
             document.location = "/";
+        }
+    });
+
+    $(".js-addhash").on("click", function(e){
+
+        var href = $(e.currentTarget).data("href"),
+            hashtag = $(".js-hashtag").val();
+
+        e.preventDefault();
+
+        if( hashtag ){
+            document.location = href + hashtag;
         }
 
     });
