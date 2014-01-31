@@ -174,31 +174,19 @@ function storenew( existing, fresh, designer ){
 
 }
 
-/*
 function fetchhashtag( hashtag ){
 
-    // Instagram API methods.
+    // Twitter API methods.
     var options = {
-        host: 'api.instagram.com',
-        port: 443,
-        path: '/v1/tags/{hashtag}/media/recent/?client_id='
-              + config.instagramclientid,
-        method: 'GET'
+        path: 'search/tweets',
+        data: { q: "#" + hashtag }
     };
-
-    options.path = options.path.replace(/{hashtag}/, hashtag);
 
     return makerequest( options );
 
 }
-*/
 
 function fetchlatest( userid ){
-
-    // If twitter not init, init
-    if (!mtwitter) {
-        initMTwitter();
-    }
 
     // Twitter API methods.
     var options = {
@@ -211,6 +199,11 @@ function fetchlatest( userid ){
 }
 
 function makerequest( options ){
+
+    // If twitter not init, init
+    if (!mtwitter) {
+        initMTwitter();
+    }
 
     var deferred = Q.defer();
 
@@ -471,7 +464,6 @@ twitter.init = function( app, auth, io ){
     };
     get('/twitter/select/designers', app, auth, selectdesigners );
 
-    /*
     var selecthowforhashtag = function(req, response){
 
         var hashtag = req.params.hashtag,
@@ -484,7 +476,7 @@ twitter.init = function( app, auth, io ){
             ])
             .spread(function(fresh, existing){
 
-                fresh = fresh.value.data;
+                fresh = mungetweets(fresh.value.statuses);
                 existing = existing.value;
                 // console.log("Existing", existing);
 
@@ -516,7 +508,6 @@ twitter.init = function( app, auth, io ){
 
     };
     get('/twitter/select/hashtag/:hashtag', app, auth, selecthowforhashtag );
-    */
 
     // Show selected all (designers and others).
     var showselected = function(req, response){
