@@ -13,14 +13,15 @@ function itemClickedHandler( e ){
     }
 
     var el = $(e.currentTarget.parentNode),
+        type = el.data('item-type'),
         id = el.data('item-id');
 
     if( ! el.hasClass( 'isselected' ) ){;
         el.addClass("isselected");
-        socket.emit('select',  id );
+        socket.emit('select', { id: id, type : type } );
     } else {
         el.removeClass("isselected");
-        socket.emit('deselect',  id );
+        socket.emit('deselect', { id: id, type : type } );
     }
 
 }

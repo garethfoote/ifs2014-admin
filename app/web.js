@@ -3,6 +3,7 @@ var config = require("./config"),
     db = require("./db"),
     auth = require('./auth'),
     instagram = require("./instagram"),
+    sockets = require("./sockets"),
     twitter = require("./twitter");
 
 // Vendor modules.
@@ -39,6 +40,7 @@ auth.init();
 // Contains express routes and logic for retreiving content.
 instagram.init( app, auth, io );
 twitter.init( app, auth, io );
+sockets.init( io );
 
 // Routes.
 app.get('/', auth.ensureAuth, function(req, response){
@@ -83,9 +85,11 @@ app.get('/get/date/:date', auth.ensureAuth, function(req, response){
 
 });
 
+/* Hopefully no longer needed.
 app.get('/cleardata', auth.ensureAuth, function(req, response){
     response.render('removeall', { user: req.user });
 });
+*/
 
 app.get('/output.json', function(req, response){
     db.collection.find({ selected : true }).sort({ created_time : -1 })
@@ -121,15 +125,3 @@ app.post('/login',
         failureFlash: true })
         );
 
-// -- Sockets
-io.sockets.on('connection', function (socket) {
-
-    socket.on('removeall', function (data) {
-
-        db.collection.remove(function(err, result) {
-                        console.log("Remove callback", err, result);
-                    });
-
-    });
-
-});
