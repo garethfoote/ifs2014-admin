@@ -38,9 +38,6 @@ function storenew( existing, fresh, designer ){
         toinsert = [],
         i;
 
-    fresh = fresh.value;
-    existing = existing.value;
-
     i = fresh.length;
 
     // Clean data of unwanted key:vals.
@@ -204,15 +201,17 @@ function makerequest( options ){
 
 }
 
-function getexisting( userid ) {
+function getexisting( query ) {
 
     var deferred = Q.defer();
+    query.type = "twitter";
 
-    db.collection.find({ twitter_id : userid, type: 'twitter' }).sort({ created_time : -1 })
+    db.collection.find( query ).sort({ created_time : -1 })
         .toArray(function( err, res ){
             if( err != "null" ){
                 deferred.resolve( res );
             } else {
+                console.log("Error: find query error - " + err);
                 deferred.reject(new Error(err));
             }
         });
@@ -230,29 +229,31 @@ function updatedesigner( designer ){
     if (designer['twitter_id'] == '') {
         deferred.reject(new Error("No Twitter account found"));
     } else {
-        db.connect().then(function(){
 
-            Q.allSettled([
-                    getexisting(designer.twitter_id),
-                    fetchlatest(designer.twitter_id)
-                ])
-                .spread(function(existing, fresh){
+    db.connect().then(function(){
 
-                    return storenew( existing, fresh, designer );
+        Q.allSettled([
+                getexisting({ twitter_id : designer.twitter_id }),
+                fetchlatest(designer.twitter_id)
+            ])
+            .spread(function(existing, fresh){
 
-                })
-                .then(function( inserted ){
-                    console.log("Inserted ", inserted, " for ", designer.name);
-                    deferred.resolve( inserted );
+                return storenew( existing.value, fresh.value, designer );
 
-                })
-                .fail(function(){
+            })
+            .then(function( inserted ){
+                console.log("Inserted ", inserted, " for ", designer.name);
+                deferred.resolve( inserted );
 
-                    deferred.reject();
+            })
+            .fail(function(){
 
-                });
+                deferred.reject();
 
-        });
+            });
+
+    });
+
     }
 
     return deferred.promise;
@@ -309,14 +310,14 @@ function initsockets( io ){
 
         socket.on('select', function (id) {
             console.log("Select: " + id);
-            // console.log(hashtagdata[id]);
+            var data = hashtagdata[id];
 
             db.collection.count({ id : id }, function(err, count) {
 
-
                 if( count === 0 ){
-
-                    // storenew([], [hashtagdata[id]]);
+                    data.selected = true;
+                    console.log("Store new", data);
+                    storenew([], [data]);
 
                 } else {
 
@@ -368,18 +369,159 @@ function initsockets( io ){
 }
 */
 
+function get( route, app, auth, action ){
+
+    var doAuth = false;
+
+    if( doAuth === true ){
+        app.get(route, auth.ensureAuth, action);
+    } else {
+        app.get(route, action);
+    }
+
+}
+
+
+
 twitter.init = function( app, auth, io ){
 
     // initsockets( io );
 
-    app.get('/twitter/checknew/designers', auth.ensureAuth,function(req, response){
+    // Links to other routes.
+    var twitterhome = function(req, response){
+
+        config.getdesigners()
+            .then(function(designers){
+
+                response.render('twitter', {
+                    user: req.user,
+                    designers : designers
+                });
+
+            });
+    };
+    get('/twitter', app, auth, twitterhome );
+
+    // Select single designer by id.
+    var selectdesigner = function(req, response){
+
+        var designerid = req.params.designerid,
+            query = { "user.username" : String( designerid ) };
+
+        getexisting(query)
+            .then(function(results){
+                response.render('contentitems', {
+                    contentitem : results, user: req.user
+                });
+            });
+
+    };
+    get('/twitter/select/designer/:designerid', app, auth, selectdesigner );
+
+    // Show all designers.
+    var selectdesigners = function(req, response){
+
+        config.getdesigners()
+            .then(function( designers ){
+
+                var userids = [];
+                for (var i = 0; i < designers.length; i++) {
+                    userids.push(String(designers[i].twitter_id));
+                };
+
+                var query = {
+                    "user.username" : { $in : userids }
+                };
+
+                getexisting(query)
+                    .then(function(results){
+                        response.render('contentitems', {
+                            contentitem : results, user: req.user
+                        });
+                    });
+
+            });
+
+    };
+    get('/twitter/select/designers', app, auth, selectdesigners );
+
+    /*
+    var selecthowforhashtag = function(req, response){
+
+        var hashtag = req.params.hashtag,
+            query = { tags : hashtag },
+            fresh, existing, existingids = [];
+
+        Q.allSettled([
+                fetchhashtag(hashtag),
+                getexisting(query)
+            ])
+            .spread(function(fresh, existing){
+
+                fresh = fresh.value.data;
+                existing = existing.value;
+                // console.log("Existing", existing);
+
+                // Get array of existing ids for easy searching.
+                for (var i = 0; i < existing.length; i++) {
+                    existingids.push( existing[i].id );
+                };
+
+                // Store fresh for possible insertion.
+                for (var j = 0; j < fresh.length; j++) {
+                    var freshid = fresh[j].id;
+                    hashtagdata[freshid] = fresh[j];
+
+                    // Add to existing array if not present.
+                    if( existingids.indexOf( freshid ) < 0 ){
+                        existing.push( hashtagdata[freshid] );
+                    }
+                };
+
+                response.render('contentitems', {
+                    user: req.user,
+                    contentitem : existing
+                });
+
+            })
+            .fail(function(err){
+                console.log(err);
+            });
+
+    };
+    get('/twitter/select/hashtag/:hashtag', app, auth, selecthowforhashtag );
+    */
+
+    // Show selected all (designers and others).
+    var showselected = function(req, response){
+
+        var query = {
+            selected : true
+        };
+
+        getexisting(query)
+            .then(function(results){
+                response.render('contentitems', {
+                    contentitem : results, user: req.user
+                });
+            });
+
+    };
+    get('/twitter/selected', app, auth, showselected );
+
+    // Retrieve new designers content.
+    var checkdesigners = function(req, response){
 
         config.getdesigners()
             .then(function( designers ){
 
                 getnewtweets( designers )
                     .then(function( result ){
-                        response.render('checknew', { user: req, inserts : result.insertednum, failed : result.failednum });
+                        response.render('checknew', {
+                            user: req.user,
+                            inserts : result.insertednum,
+                            failed : result.failednum
+                        });
 
                     });
             })
@@ -388,26 +530,7 @@ twitter.init = function( app, auth, io ){
 
             });
 
-    });
+    };
+    get('/twitter/checknew/designers', app, auth, checkdesigners );
 
-    /*app.get('/instagram/checknew/hashtag/:hashtag', auth.ensureAuth, function(req, response){
-
-        var hashtag = req.params.hashtag;
-
-        fetchhashtag(hashtag)
-            .then(function(results){
-
-                var data = results.data;
-                for (var i = 0; i < data.length; i++) {
-                    hashtagdata[data[i].id] = data[i];
-                };
-
-                response.render('contentitems', {
-                    user: req.user,
-                    contentitem : results.data
-                });
-
-            });
-
-    });*/
 };

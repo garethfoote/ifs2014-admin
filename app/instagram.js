@@ -210,18 +210,17 @@ function getnewinstagrams( designers ){
 
                 completetotal++;
                 insertstotal += insertednum;
-                if( completetotal+failedtotal == designers.length ){
-                    deferred.resolve({ insertednum: insertstotal, failednum : failedtotal });
-                }
 
             })
             .fail(function(){
 
                 failedtotal++;
+
+            })
+            .fin(function(){
                 if( completetotal+failedtotal == designers.length ){
                     deferred.resolve({ insertednum: insertstotal, failednum : failedtotal });
                 }
-
             });
     }
 
