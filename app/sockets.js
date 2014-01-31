@@ -71,13 +71,11 @@ sockets.init = function( io ){
                 }
             });
 
-            if( tags.length ){
-                db.collection.update({ id : data.id },
-                        { $set: { custom_tags : tags }},
-                        function(err, items){
-                            console.log("Tags updated.", err, items);
-                        });
-            }
+            db.collection.update({ id : data.id },
+                    { $set: { custom_tags : tags }},
+                    function(err, items){
+                        console.log("Tags updated.", err, items);
+                    });
 
         });
 
