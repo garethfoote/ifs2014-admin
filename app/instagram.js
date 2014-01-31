@@ -208,7 +208,6 @@ function getnewinstagrams( designers ){
     var deferred = Q.defer(),
         completetotal = 0,
         failedtotal = 0,
-        noidtotal = 0,
         insertstotal = 0;
 
     for (var i = 0; i < designers.length; i++) {
@@ -228,7 +227,7 @@ function getnewinstagrams( designers ){
 
             })
             .fin(function(){
-                if( completetotal+failedtotal+noidtotal == designers.length ){
+                if( completetotal+failedtotal == designers.length ){
                     deferred.resolve({ insertednum: insertstotal, failednum : failedtotal });
                 }
             });
@@ -241,7 +240,7 @@ function getnewinstagrams( designers ){
 
 function get( route, app, auth, action ){
 
-    var doAuth = false;
+    var doAuth = true;
 
     if( doAuth === true ){
         app.get(route, auth.ensureAuth, action);
