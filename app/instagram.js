@@ -21,7 +21,8 @@ function storenew( existing, fresh, designer ){
             "id",
             "user",
             "country",
-            "caption"
+            "caption",
+            "selected"
         ],
         toinsert = [],
         i;
@@ -227,84 +228,10 @@ function getnewinstagrams( designers ){
     return deferred.promise;
 }
 
-function initsockets( io ){
-
-    // -- Sockets
-    io.sockets.on('connection', function (socket) {
-
-        socket.on('deselect', function (id) {
-            console.log("Deselect: " + id);
-            db.collection.update({ id : id },
-                        { $set: { selected : false }},
-                        function(err, items){
-                            console.log(err, items);
-                        });
-
-        });
-
-        socket.on('select', function (id) {
-            console.log("Select: " + id);
-            var data = hashtagdata[id];
-
-            db.collection.count({ id : id }, function(err, count) {
-
-                if( count === 0 ){
-                    data.selected = true;
-                    console.log("Store new", data);
-                    storenew([], [data]);
-
-                } else {
-
-                    db.collection.update({ id : id },
-                                { $set: { selected : true }},
-                                function(err, items){
-                                    console.log("Updated", err, items);
-                                });
-
-                }
-
-            });
-
-        });
-
-        socket.on('caption', function (data) {
-            console.log("Update caption: " + data.id);
-
-            db.collection.update({ id : data.id },
-                    { $set: { custom_caption : data.caption }},
-                    function(err, items){
-                        console.log("Caption udpated.", err, items);
-                    });
-        });
-
-        socket.on('tags', function (data) {
-            console.log("Update tags: " + data.id);
-
-            var tags = [];
-            data.tags.split(",").forEach(function(tag){
-                console.log(tag.trim(),tag.trim().match(/^[a-zA-Z0-9_]*$/));
-                if( tag.trim() && tag.trim().match(/^[a-zA-Z0-9_]*$/)){
-                    tags.push(tag.trim());
-                }
-            });
-
-            if( tags.length ){
-                db.collection.update({ id : data.id },
-                        { $set: { custom_tags : tags }},
-                        function(err, items){
-                            console.log("Tags updated.", err, items);
-                        });
-            }
-
-        });
-
-    });
-
-}
 
 function get( route, app, auth, action ){
 
-    var doAuth = true;
+    var doAuth = false;
 
     if( doAuth === true ){
         app.get(route, auth.ensureAuth, action);
@@ -314,11 +241,19 @@ function get( route, app, auth, action ){
 
 }
 
+instagram.insertselected = function( id ){
 
+    console.log("insertselected()", id, hashtagdata.hasOwnProperty(id));
+    var data = hashtagdata[id];
+
+    data.selected = true;
+    console.log(data);
+
+    storenew([], [data]);
+
+}
 
 instagram.init = function( app, auth, io ){
-
-    initsockets( io );
 
     // Links to other routes.
     var instagramhome = function(req, response){
@@ -438,7 +373,7 @@ instagram.init = function( app, auth, io ){
     };
     get('/instagram/select/designers', app, auth, selectdesigners );
 
-    var selecthowforhashtag = function(req, response){
+    var selecthashtag = function(req, response){
 
         var hashtag = req.params.hashtag,
             query = { tags : hashtag },
@@ -457,18 +392,22 @@ instagram.init = function( app, auth, io ){
                 // Get array of existing ids for easy searching.
                 for (var i = 0; i < existing.length; i++) {
                     existingids.push( existing[i].id );
+                    existing[i].type = "instagram";
                 };
 
                 // Store fresh for possible insertion.
                 for (var j = 0; j < fresh.length; j++) {
                     var freshid = fresh[j].id;
                     hashtagdata[freshid] = fresh[j];
+                    hashtagdata[freshid].type = "instagram";
 
                     // Add to existing array if not present.
                     if( existingids.indexOf( freshid ) < 0 ){
                         existing.push( hashtagdata[freshid] );
                     }
                 };
+
+                console.log(existing[1]);
 
                 response.render('contentitems', {
                     user: req.user,
@@ -481,7 +420,7 @@ instagram.init = function( app, auth, io ){
             });
 
     };
-    get('/instagram/select/hashtag/:hashtag', app, auth, selecthowforhashtag );
+    get('/instagram/select/hashtag/:hashtag', app, auth, selecthashtag );
 
     // Show selected all (designers and others).
     var showselected = function(req, response){
