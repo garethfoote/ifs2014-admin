@@ -16,7 +16,9 @@
         <ul class="designers__select">
             <li><a href="/instagram/select/designers">All</a></li>
         {{#each designers}}
+            {{#if ig_user_id}}
         <li><a href="/instagram/select/designer/{{ig_user_id}}">{{name}}</a> ({{country}})</li>
+            {{/if}}
         {{/each}}
         </ul>
     </div>
