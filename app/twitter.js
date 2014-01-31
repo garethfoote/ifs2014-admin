@@ -116,6 +116,7 @@ function storenew( existing, fresh, designer ){
             "user",
             "country",
             "caption",
+            "selected",
             "munged"
         ],
         toinsert = [],
@@ -311,82 +312,6 @@ function getnewtweets( designers ){
     return deferred.promise;
 }
 
-/*
-function initsockets( io ){
-
-    // -- Sockets
-    io.sockets.on('connection', function (socket) {
-
-        socket.on('deselect', function (id) {
-            console.log("Deselect: " + id);
-            db.collection.update({ id : id },
-                        { $set: { selected : false }},
-                        function(err, items){
-                            console.log(err, items);
-                        });
-
-        });
-
-        socket.on('select', function (id) {
-            console.log("Select: " + id);
-            var data = hashtagdata[id];
-
-            db.collection.count({ id : id }, function(err, count) {
-
-                if( count === 0 ){
-                    data.selected = true;
-                    console.log("Store new", data);
-                    storenew([], [data]);
-
-                } else {
-
-                    db.collection.update({ id : id },
-                                { $set: { selected : true }},
-                                function(err, items){
-                                    console.log("Updated", err, items);
-                                });
-
-                }
-
-            });
-
-        });
-
-        socket.on('caption', function (data) {
-            console.log("Update caption: " + data.id);
-
-            db.collection.update({ id : data.id },
-                    { $set: { custom_caption : data.caption }},
-                    function(err, items){
-                        console.log("Caption udpated.", err, items);
-                    });
-        });
-
-        socket.on('tags', function (data) {
-            console.log("Update tags: " + data.id);
-
-            var tags = [];
-            data.tags.split(",").forEach(function(tag){
-                console.log(tag.trim(),tag.trim().match(/^[a-zA-Z0-9_]*$/));
-                if( tag.trim() && tag.trim().match(/^[a-zA-Z0-9_]*$/)){
-                    tags.push(tag.trim());
-                }
-            });
-
-            if( tags.length ){
-                db.collection.update({ id : data.id },
-                        { $set: { custom_tags : tags }},
-                        function(err, items){
-                            console.log("Tags updated.", err, items);
-                        });
-            }
-
-        });
-
-    });
-
-}
-*/
 
 function get( route, app, auth, action ){
 
@@ -400,11 +325,18 @@ function get( route, app, auth, action ){
 
 }
 
+twitter.insertselected = function( id ){
 
+    console.log("insertselected()", id, hashtagdata.hasOwnProperty(id));
+    var data = hashtagdata[id];
+
+    data.selected = true;
+
+    storenew([], [data]);
+
+}
 
 twitter.init = function( app, auth, io ){
-
-    // initsockets( io );
 
     // Links to other routes.
     var twitterhome = function(req, response){
@@ -464,7 +396,7 @@ twitter.init = function( app, auth, io ){
     };
     get('/twitter/select/designers', app, auth, selectdesigners );
 
-    var selecthowforhashtag = function(req, response){
+    var selecthashtag = function(req, response){
 
         var hashtag = req.params.hashtag,
             query = { tags : hashtag },
@@ -483,12 +415,14 @@ twitter.init = function( app, auth, io ){
                 // Get array of existing ids for easy searching.
                 for (var i = 0; i < existing.length; i++) {
                     existingids.push( existing[i].id );
+                    existing[i].type = "twitter";
                 };
 
                 // Store fresh for possible insertion.
                 for (var j = 0; j < fresh.length; j++) {
                     var freshid = fresh[j].id;
                     hashtagdata[freshid] = fresh[j];
+                    hashtagdata[freshid].type = "twitter";
 
                     // Add to existing array if not present.
                     if( existingids.indexOf( freshid ) < 0 ){
@@ -507,7 +441,7 @@ twitter.init = function( app, auth, io ){
             });
 
     };
-    get('/twitter/select/hashtag/:hashtag', app, auth, selecthowforhashtag );
+    get('/twitter/select/hashtag/:hashtag', app, auth, selecthashtag );
 
     // Show selected all (designers and others).
     var showselected = function(req, response){

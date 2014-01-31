@@ -247,7 +247,6 @@ instagram.insertselected = function( id ){
     var data = hashtagdata[id];
 
     data.selected = true;
-    console.log(data);
 
     storenew([], [data]);
 
@@ -406,8 +405,6 @@ instagram.init = function( app, auth, io ){
                         existing.push( hashtagdata[freshid] );
                     }
                 };
-
-                console.log(existing[1]);
 
                 response.render('contentitems', {
                     user: req.user,
