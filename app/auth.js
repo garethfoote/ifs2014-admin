@@ -5,8 +5,8 @@ module.exports = (function(){
 
     var self = this,
         users = [
-            { id: 1, username: 'gareth', password: 'pAssw0rd'},
-            { id: 2, username: 'curator', password: 'If52014$'}
+            { id: 1, username: 'gareth', password: process.env.pw_gareth},
+            { id: 2, username: 'curator', password: process.env.pw_curator}
         ],
 
         findById = function(id, fn) {
