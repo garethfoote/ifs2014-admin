@@ -12,14 +12,14 @@ function itemClickedHandler( e ){
         return;
     }
 
-    var el = e.currentTarget.parentNode,
-        id = el.getAttribute('data-item-id');
+    var el = $(e.currentTarget.parentNode),
+        id = el.data('item-id');
 
-    if( ! el.className.match( classRegExp('isselected')) ){;
-        el.className = el.className + " isselected";
+    if( ! el.hasClass( 'isselected' ) ){;
+        el.addClass("isselected");
         socket.emit('select',  id );
     } else {
-        el.className = el.className.replace( classRegExp('isselected'), '' );
+        el.removeClass("isselected");
         socket.emit('deselect',  id );
     }
 
@@ -28,20 +28,16 @@ function itemClickedHandler( e ){
 
 function handleBlur( e ){
 
-    var el = e.target,
-        id = el.getAttribute('data-item-id'),
-        value = el.value;
+    var el = $(e.target),
+        id = el.data('item-id'),
+        value = el.val();
 
-    if( ! hasClass(el,"content-item__tags") ){
-        socket.emit('caption', { id : id, caption : value });
-    } else {
+    if( el.hasClass("content-item__tags") ){
         socket.emit('tags', { id : id, tags : value });
+    } else {
+        socket.emit('caption', { id : id, caption : value });
     }
 
-}
-
-function hasClass(ele,cls) {
-        return ele.className.match(new RegExp('(\\s|^)'+cls+'(\\s|$)'));
 }
 
 $(function(){
@@ -56,8 +52,8 @@ $(function(){
         caption = $(".content-item__caption", ci[i]);
 
         $(img).on("click", itemClickedHandler);
-        $(tags).on("click", handleBlur);
-        $(caption).on("click", handleBlur);
+        $(tags).on("blur", handleBlur);
+        $(caption).on("blur", handleBlur);
 
     }
 
