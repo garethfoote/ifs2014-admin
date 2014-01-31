@@ -19,24 +19,116 @@ function initMTwitter(){
     });
 }
 
+function mungetweets( tweets ){
+
+    i = tweets.length;
+
+    while( i-- ){
+        if (!tweets[i]["munged"]) {
+
+            tweets[i]["id"] = tweets[i]["id_str"];
+            tweets[i]["created_time"] = new Date(tweets[i]["created_at"]).getTime() / 1000
+
+            var u = tweets[i]["user"],
+                e = tweets[i]["entities"],
+                user = {
+                    "username": u["screen_name"],
+                    "website": u["url"],
+                    "profile_picture": u["profile_image_url"],
+                    "full_name": u["name"],
+                    "bio": u["description"],
+                    "id": u["id"]
+                };
+
+            tweets[i]["user"] = user;
+            tweets[i]['link'] = "https://twitter.com/" + user["username"] + "/status/" + tweets[i]["id"];
+
+            var tags = [];
+            for (var j = 0; j < e["hashtags"].length; j++) {
+                tags.push(e["hashtags"][j]["text"]);
+            }
+            tweets[i]["tags"] = tags;
+
+            // Media could be images, video etc - look for the first image only
+            if (e["media"]) {
+                var image;
+                for (var j = 0; j < e["media"].length; j++) {
+                    if (e["media"][j]["type"] === "photo") {
+                        image = e["media"][j];
+                        break;
+                    }
+                }
+                if (image) {
+                    tweets[i]["images"] = {
+                        "low_resolution" : {
+                            "url" : image["media_url"] + ":small",
+                            "width": image["sizes"]["small"]["w"],
+                            "height": image["sizes"]["small"]["h"]
+                        },
+                        "thumbnail" : {
+                            "url" : image["media_url"] + ":thumb",
+                            "width": image["sizes"]["thumb"]["w"],
+                            "height": image["sizes"]["thumb"]["h"]
+                        },
+                        "standard_resolution" : {
+                            "url" : image["media_url"] + ":medium",
+                            "width": image["sizes"]["medium"]["w"],
+                            "height": image["sizes"]["medium"]["h"]
+                        }
+                    };
+                }
+            }
+            delete tweets[i]["entities"];
+
+            // Defaults
+            if (!tweets[i]["images"]) {
+                tweets[i]["images"] = false;
+            }
+
+            if (tweets[i]["coordinates"]) {
+                tweets[i]["location"] = {
+                    longitude: tweets[i]["coordinates"]["coordinates"][0],
+                    latitude: tweets[i]["coordinates"]["coordinates"][1]
+                }
+            } else {
+                tweets[i]["location"] = null;
+            }
+
+            tweets[i]["caption"] = {text: tweets[i]["text"]};
+            delete tweets[i]["text"];
+
+            // Once you munge, you'll never go back
+            tweets[i]["munged"] = true;
+        }
+    }
+
+    return tweets
+
+}
+
 function storenew( existing, fresh, designer ){
 
     var deferred = Q.defer();
 
     var keylist = [
             "location",
-            "entities",
-            "created_at",
-            "id_str",
-            "text",
-            "user"
+            "tags",
+            "created_time",
+            "link",
+            "images",
+            "type",
+            "id",
+            "user",
+            "country",
+            "caption",
+            "selected",
+            "munged"
         ],
-        map = {
-            "created_at": "created_time",
-            "id_str": "id"
-        },
         toinsert = [],
         i;
+
+    // Munge ahoy!
+    fresh = mungetweets(fresh);
 
     i = fresh.length;
 
@@ -45,12 +137,6 @@ function storenew( existing, fresh, designer ){
         for(var key in fresh[i]){
             if( keylist.indexOf( key ) < 0 ){
                 delete fresh[i][key]
-            }
-            // Map Tweet properties to Instagram names!
-            if (map[key]) {
-                var copy = map[key];
-                fresh[i][copy] = fresh[i][key];
-                delete fresh[i][key];
             }
             // Convert time to integer.
             if( key === "created_time" ){
@@ -62,70 +148,11 @@ function storenew( existing, fresh, designer ){
             for(var key in designer ){
                 fresh[i][key] = designer[key];
             }
+        } else {
+            // If no designer this will have no country.
+            fresh[i].country = null;
         }
         fresh[i].type = "twitter";
-
-        // Munge the rest
-        var u = fresh[i]["user"],
-            e = fresh[i]["entities"],
-            user = {
-                "username": u["screen_name"],
-                "website": u["url"],
-                "profile_picture": u["profile_image_url"],
-                "full_name": u["name"],
-                "bio": u["description"],
-                "id": u["id"]
-            };
-
-        fresh[i]["user"] = user;
-        fresh[i]['link'] = "https://twitter.com/" + user["username"] + "/status/" + fresh[i]["id"];
-
-        var tags = [];
-        for (var j = 0; j < e["hashtags"].length; j++) {
-            tags.push(e["hashtags"][j]["text"]);
-        }
-        fresh[i]["tags"] = tags;
-
-        if (e["media"]) {
-            var image;
-            for (var j = 0; j < e["media"].length; j++) {
-                if (e["media"][j]["type"] === "photo") {
-                    image = e["media"][j];
-                    break;
-                }
-            }
-            if (image) {
-                fresh[i]["images"] = {
-                    "low_resolution" : {
-                        "url" : image["media_url"] + ":small",
-                        "width": image["sizes"]["small"]["w"],
-                        "height": image["sizes"]["small"]["h"]
-                    },
-                    "thumbnail" : {
-                        "url" : image["media_url"] + ":thumb",
-                        "width": image["sizes"]["thumb"]["w"],
-                        "height": image["sizes"]["thumb"]["h"]
-                    },
-                    "standard_resolution" : {
-                        "url" : image["media_url"] + ":medium",
-                        "width": image["sizes"]["medium"]["w"],
-                        "height": image["sizes"]["medium"]["h"]
-                    }
-                };
-            }
-        }
-        delete fresh[i]["entities"];
-
-        if (!fresh[i]["images"]) {
-            fresh[i]["images"] = false;
-        }
-
-        if (!fresh[i]["location"]) {
-            fresh[i]["location"] = null;
-        }
-
-        fresh[i]["caption"] = {text: fresh[i]["text"]};
-        delete fresh[i]["text"];
     }
 
     // Created array of items to insert.
@@ -156,31 +183,19 @@ function storenew( existing, fresh, designer ){
 
 }
 
-/*
 function fetchhashtag( hashtag ){
 
-    // Instagram API methods.
+    // Twitter API methods.
     var options = {
-        host: 'api.instagram.com',
-        port: 443,
-        path: '/v1/tags/{hashtag}/media/recent/?client_id='
-              + config.instagramclientid,
-        method: 'GET'
+        path: 'search/tweets',
+        data: { q: "#" + hashtag }
     };
-
-    options.path = options.path.replace(/{hashtag}/, hashtag);
 
     return makerequest( options );
 
 }
-*/
 
 function fetchlatest( userid ){
-
-    // If twitter not init, init
-    if (!mtwitter) {
-        initMTwitter();
-    }
 
     // Twitter API methods.
     var options = {
@@ -193,6 +208,11 @@ function fetchlatest( userid ){
 }
 
 function makerequest( options ){
+
+    // If twitter not init, init
+    if (!mtwitter) {
+        initMTwitter();
+    }
 
     var deferred = Q.defer();
 
@@ -250,13 +270,13 @@ function updatedesigner( designer ){
 
             })
             .then(function( inserted ){
-                console.log("Inserted ", inserted, " for ", designer.name);
+
                 deferred.resolve( inserted );
 
             })
-            .fail(function(){
+            .fail(function(err){
 
-                deferred.reject();
+                deferred.reject(err);
 
             });
 
@@ -300,82 +320,6 @@ function getnewtweets( designers ){
     return deferred.promise;
 }
 
-/*
-function initsockets( io ){
-
-    // -- Sockets
-    io.sockets.on('connection', function (socket) {
-
-        socket.on('deselect', function (id) {
-            console.log("Deselect: " + id);
-            db.collection.update({ id : id },
-                        { $set: { selected : false }},
-                        function(err, items){
-                            console.log(err, items);
-                        });
-
-        });
-
-        socket.on('select', function (id) {
-            console.log("Select: " + id);
-            var data = hashtagdata[id];
-
-            db.collection.count({ id : id }, function(err, count) {
-
-                if( count === 0 ){
-                    data.selected = true;
-                    console.log("Store new", data);
-                    storenew([], [data]);
-
-                } else {
-
-                    db.collection.update({ id : id },
-                                { $set: { selected : true }},
-                                function(err, items){
-                                    console.log("Updated", err, items);
-                                });
-
-                }
-
-            });
-
-        });
-
-        socket.on('caption', function (data) {
-            console.log("Update caption: " + data.id);
-
-            db.collection.update({ id : data.id },
-                    { $set: { custom_caption : data.caption }},
-                    function(err, items){
-                        console.log("Caption udpated.", err, items);
-                    });
-        });
-
-        socket.on('tags', function (data) {
-            console.log("Update tags: " + data.id);
-
-            var tags = [];
-            data.tags.split(",").forEach(function(tag){
-                console.log(tag.trim(),tag.trim().match(/^[a-zA-Z0-9_]*$/));
-                if( tag.trim() && tag.trim().match(/^[a-zA-Z0-9_]*$/)){
-                    tags.push(tag.trim());
-                }
-            });
-
-            if( tags.length ){
-                db.collection.update({ id : data.id },
-                        { $set: { custom_tags : tags }},
-                        function(err, items){
-                            console.log("Tags updated.", err, items);
-                        });
-            }
-
-        });
-
-    });
-
-}
-*/
 
 function get( route, app, auth, action ){
 
@@ -389,11 +333,17 @@ function get( route, app, auth, action ){
 
 }
 
+twitter.insertselected = function( id ){
 
+    var data = hashtagdata[id];
+
+    data.selected = true;
+
+    storenew([], [data]);
+
+}
 
 twitter.init = function( app, auth, io ){
-
-    // initsockets( io );
 
     // Links to other routes.
     var twitterhome = function(req, response){
@@ -453,8 +403,7 @@ twitter.init = function( app, auth, io ){
     };
     get('/twitter/select/designers', app, auth, selectdesigners );
 
-    /*
-    var selecthowforhashtag = function(req, response){
+    var selecthashtag = function(req, response){
 
         var hashtag = req.params.hashtag,
             query = { tags : hashtag },
@@ -466,23 +415,30 @@ twitter.init = function( app, auth, io ){
             ])
             .spread(function(fresh, existing){
 
-                fresh = fresh.value.data;
+                fresh = mungetweets(fresh.value.statuses);
                 existing = existing.value;
                 // console.log("Existing", existing);
 
                 // Get array of existing ids for easy searching.
                 for (var i = 0; i < existing.length; i++) {
                     existingids.push( existing[i].id );
+                    existing[i].type = "twitter";
                 };
 
                 // Store fresh for possible insertion.
                 for (var j = 0; j < fresh.length; j++) {
-                    var freshid = fresh[j].id;
-                    hashtagdata[freshid] = fresh[j];
+                    // Only make this available if location is present.
+                    // #tag items without location do not have default/fallback.
+                    if( fresh[j].location ){
 
-                    // Add to existing array if not present.
-                    if( existingids.indexOf( freshid ) < 0 ){
-                        existing.push( hashtagdata[freshid] );
+                        var freshid = fresh[j].id;
+                        hashtagdata[freshid] = fresh[j];
+                        hashtagdata[freshid].type = "twitter";
+
+                        // Add to existing array if not present.
+                        if( existingids.indexOf( freshid ) < 0 ){
+                            existing.push( hashtagdata[freshid] );
+                        }
                     }
                 };
 
@@ -497,8 +453,7 @@ twitter.init = function( app, auth, io ){
             });
 
     };
-    get('/twitter/select/hashtag/:hashtag', app, auth, selecthowforhashtag );
-    */
+    get('/twitter/select/hashtag/:hashtag', app, auth, selecthashtag );
 
     // Show selected all (designers and others).
     var showselected = function(req, response){
