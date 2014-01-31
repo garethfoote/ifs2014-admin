@@ -45,6 +45,9 @@ function storenew( existing, fresh, designer ){
             for(var key in designer ){
                 fresh[i][key] = designer[key];
             }
+        } else {
+            // If no designer this will have no country.
+            fresh[i].country = null;
         }
         fresh[i].type = "instagram";
     }
@@ -180,13 +183,13 @@ function updatedesigner( designer ){
 
             })
             .then(function( inserted ){
-                console.log("Inserted ", inserted, " for ", designer.name);
+
                 deferred.resolve( inserted );
 
             })
-            .fail(function(){
+            .fail(function(err){
 
-                deferred.reject();
+                deferred.reject(err);
 
             });
 
@@ -200,29 +203,35 @@ function getnewinstagrams( designers ){
     var deferred = Q.defer(),
         completetotal = 0,
         failedtotal = 0,
+        noidtotal = 0,
         insertstotal = 0;
 
     for (var i = 0; i < designers.length; i++) {
 
         console.log("Get new for ", designers[i].name);
 
-        updatedesigner( designers[i] )
-            .then(function( insertednum ){
+        if( designers[i].ig_user_id ){
 
-                completetotal++;
-                insertstotal += insertednum;
+            updatedesigner( designers[i] )
+                .then(function( insertednum ){
 
-            })
-            .fail(function(){
+                    completetotal++;
+                    insertstotal += insertednum;
 
-                failedtotal++;
+                })
+                .fail(function( err ){
 
-            })
-            .fin(function(){
-                if( completetotal+failedtotal == designers.length ){
-                    deferred.resolve({ insertednum: insertstotal, failednum : failedtotal });
-                }
-            });
+                    failedtotal++;
+
+                })
+                .fin(function(){
+                    if( completetotal+failedtotal+noidtotal == designers.length ){
+                        deferred.resolve({ insertednum: insertstotal, failednum : failedtotal });
+                    }
+                });
+        } else {
+            noidtotal++;
+        }
     }
 
     return deferred.promise;
@@ -243,11 +252,9 @@ function get( route, app, auth, action ){
 
 instagram.insertselected = function( id ){
 
-    console.log("insertselected()", id, hashtagdata.hasOwnProperty(id));
     var data = hashtagdata[id];
 
     data.selected = true;
-    console.log(data);
 
     storenew([], [data]);
 
@@ -397,17 +404,20 @@ instagram.init = function( app, auth, io ){
 
                 // Store fresh for possible insertion.
                 for (var j = 0; j < fresh.length; j++) {
-                    var freshid = fresh[j].id;
-                    hashtagdata[freshid] = fresh[j];
-                    hashtagdata[freshid].type = "instagram";
+                    // Only make this available if location is present.
+                    // #tag items without location do not have default/fallback.
+                    if( fresh[i].location ){
 
-                    // Add to existing array if not present.
-                    if( existingids.indexOf( freshid ) < 0 ){
-                        existing.push( hashtagdata[freshid] );
+                        var freshid = fresh[j].id;
+                        hashtagdata[freshid] = fresh[j];
+                        hashtagdata[freshid].type = "instagram";
+
+                        // Add to existing array if not present.
+                        if( existingids.indexOf( freshid ) < 0 ){
+                            existing.push( hashtagdata[freshid] );
+                        }
                     }
                 };
-
-                console.log(existing[1]);
 
                 response.render('contentitems', {
                     user: req.user,
