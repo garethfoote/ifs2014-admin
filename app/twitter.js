@@ -379,7 +379,7 @@ function initsockets( io ){
 
 function get( route, app, auth, action ){
 
-    var doAuth = false;
+    var doAuth = true;
 
     if( doAuth === true ){
         app.get(route, auth.ensureAuth, action);
