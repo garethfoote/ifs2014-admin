@@ -171,29 +171,34 @@ function updatedesigner( designer ){
 
     console.log("Get", designer.name);
 
-    db.connect().then(function(){
+    if (designer['ig_user_id'] == '') {
 
-        Q.allSettled([
-                getexisting({ ig_user_id : designer.ig_user_id }),
-                fetchlatest(designer.ig_user_id)
-            ])
-            .spread(function(existing, fresh){
+        deferred.reject(new Error("No Instagram account found"));
 
-                return storenew( existing.value, fresh.value.data, designer );
+    } else {
 
-            })
-            .then(function( inserted ){
+        db.connect().then(function(){
 
-                deferred.resolve( inserted );
+            Q.allSettled([
+                    getexisting({ ig_user_id : designer.ig_user_id }),
+                    fetchlatest(designer.ig_user_id)
+                ])
+                .spread(function(existing, fresh){
 
-            })
-            .fail(function(err){
+                    return storenew( existing.value, fresh.value.data, designer );
+                })
+                .then(function( inserted ){
 
-                deferred.reject(err);
+                    deferred.resolve( inserted );
 
-            });
+                })
+                .fail(function(err){
 
-    });
+                    deferred.reject(err);
+
+                });
+        });
+    }
 
     return deferred.promise;
 }
@@ -210,28 +215,24 @@ function getnewinstagrams( designers ){
 
         console.log("Get new for ", designers[i].name);
 
-        if( designers[i].ig_user_id ){
+        updatedesigner( designers[i] )
+            .then(function( insertednum ){
 
-            updatedesigner( designers[i] )
-                .then(function( insertednum ){
+                completetotal++;
+                insertstotal += insertednum;
 
-                    completetotal++;
-                    insertstotal += insertednum;
+            })
+            .fail(function( err ){
 
-                })
-                .fail(function( err ){
+                failedtotal++;
 
-                    failedtotal++;
+            })
+            .fin(function(){
+                if( completetotal+failedtotal+noidtotal == designers.length ){
+                    deferred.resolve({ insertednum: insertstotal, failednum : failedtotal });
+                }
+            });
 
-                })
-                .fin(function(){
-                    if( completetotal+failedtotal+noidtotal == designers.length ){
-                        deferred.resolve({ insertednum: insertstotal, failednum : failedtotal });
-                    }
-                });
-        } else {
-            noidtotal++;
-        }
     }
 
     return deferred.promise;
