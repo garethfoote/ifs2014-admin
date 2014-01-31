@@ -406,7 +406,7 @@ instagram.init = function( app, auth, io ){
                 for (var j = 0; j < fresh.length; j++) {
                     // Only make this available if location is present.
                     // #tag items without location do not have default/fallback.
-                    if( fresh[i].location ){
+                    if( fresh[j].location ){
 
                         var freshid = fresh[j].id;
                         hashtagdata[freshid] = fresh[j];
