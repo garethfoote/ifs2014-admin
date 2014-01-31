@@ -87,8 +87,8 @@ function mungetweets( tweets ){
 
             if (tweets[i]["coordinates"]) {
                 tweets[i]["location"] = {
-                    latitude: tweets[i]["coordinates"]["coordinates"][0],
-                    longitude: tweets[i]["coordinates"]["coordinates"][1]
+                    longitude: tweets[i]["coordinates"]["coordinates"][0],
+                    latitude: tweets[i]["coordinates"]["coordinates"][1]
                 }
             } else {
                 tweets[i]["location"] = null;
