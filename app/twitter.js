@@ -143,6 +143,9 @@ function storenew( existing, fresh, designer ){
             for(var key in designer ){
                 fresh[i][key] = designer[key];
             }
+        } else {
+            // If no designer this will have no country.
+            fresh[i].country = null;
         }
         fresh[i].type = "twitter";
     }
@@ -262,13 +265,13 @@ function updatedesigner( designer ){
 
             })
             .then(function( inserted ){
-                console.log("Inserted ", inserted, " for ", designer.name);
+
                 deferred.resolve( inserted );
 
             })
-            .fail(function(){
+            .fail(function(err){
 
-                deferred.reject();
+                deferred.reject(err);
 
             });
 
