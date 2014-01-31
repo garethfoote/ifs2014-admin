@@ -255,33 +255,32 @@ function updatedesigner( designer ){
     console.log("Get", designer.name);
 
     if (designer['twitter_id'] == '') {
+
         deferred.reject(new Error("No Twitter account found"));
+
     } else {
 
-    db.connect().then(function(){
+        db.connect().then(function(){
 
-        Q.allSettled([
-                getexisting({ twitter_id : designer.twitter_id }),
-                fetchlatest(designer.twitter_id)
-            ])
-            .spread(function(existing, fresh){
+            Q.allSettled([
+                    getexisting({ twitter_id : designer.twitter_id }),
+                    fetchlatest(designer.twitter_id)
+                ])
+                .spread(function(existing, fresh){
 
-                return storenew( existing.value, fresh.value, designer );
+                    return storenew( existing.value, fresh.value, designer );
+                })
+                .then(function( inserted ){
 
-            })
-            .then(function( inserted ){
+                    deferred.resolve( inserted );
 
-                deferred.resolve( inserted );
+                })
+                .fail(function(err){
 
-            })
-            .fail(function(err){
+                    deferred.reject(err);
 
-                deferred.reject(err);
-
-            });
-
-    });
-
+                });
+        });
     }
 
     return deferred.promise;
@@ -305,7 +304,7 @@ function getnewtweets( designers ){
                 insertstotal += insertednum;
 
             })
-            .fail(function(){
+            .fail(function( err ){
 
                 failedtotal++;
 
