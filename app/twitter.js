@@ -85,7 +85,12 @@ function mungetweets( tweets ){
                 tweets[i]["images"] = false;
             }
 
-            if (!tweets[i]["location"]) {
+            if (tweets[i]["coordinates"]) {
+                tweets[i]["location"] = {
+                    latitude: tweets[i]["coordinates"]["coordinates"][0],
+                    longitude: tweets[i]["coordinates"]["coordinates"][1]
+                }
+            } else {
                 tweets[i]["location"] = null;
             }
 
@@ -330,7 +335,6 @@ function get( route, app, auth, action ){
 
 twitter.insertselected = function( id ){
 
-    console.log("insertselected()", id, hashtagdata.hasOwnProperty(id));
     var data = hashtagdata[id];
 
     data.selected = true;
@@ -423,13 +427,18 @@ twitter.init = function( app, auth, io ){
 
                 // Store fresh for possible insertion.
                 for (var j = 0; j < fresh.length; j++) {
-                    var freshid = fresh[j].id;
-                    hashtagdata[freshid] = fresh[j];
-                    hashtagdata[freshid].type = "twitter";
+                    // Only make this available if location is present.
+                    // #tag items without location do not have default/fallback.
+                    if( fresh[j].location ){
 
-                    // Add to existing array if not present.
-                    if( existingids.indexOf( freshid ) < 0 ){
-                        existing.push( hashtagdata[freshid] );
+                        var freshid = fresh[j].id;
+                        hashtagdata[freshid] = fresh[j];
+                        hashtagdata[freshid].type = "twitter";
+
+                        // Add to existing array if not present.
+                        if( existingids.indexOf( freshid ) < 0 ){
+                            existing.push( hashtagdata[freshid] );
+                        }
                     }
                 };
 
