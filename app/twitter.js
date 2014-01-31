@@ -480,6 +480,7 @@ twitter.init = function( app, auth, io ){
                 getnewtweets( designers )
                     .then(function( result ){
                         response.render('checknew', {
+                            api_name: "Twitter",
                             user: req.user,
                             inserts : result.insertednum,
                             failed : result.failednum

@@ -458,6 +458,7 @@ instagram.init = function( app, auth, io ){
                 getnewinstagrams( designers )
                     .then(function( result ){
                         response.render('checknew', {
+                            api_name: "Instagram",
                             user: req.user,
                             inserts : result.insertednum,
                             failed : result.failednum
