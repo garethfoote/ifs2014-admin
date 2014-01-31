@@ -19,24 +19,110 @@ function initMTwitter(){
     });
 }
 
+function mungetweets( tweets ){
+
+    i = tweets.length;
+
+    while( i-- ){
+        if (!tweets[i]["munged"]) {
+
+            tweets[i]["id"] = tweets[i]["id_str"];
+            tweets[i]["created_time"] = new Date(tweets[i]["created_at"]).getTime() / 1000
+
+            var u = tweets[i]["user"],
+                e = tweets[i]["entities"],
+                user = {
+                    "username": u["screen_name"],
+                    "website": u["url"],
+                    "profile_picture": u["profile_image_url"],
+                    "full_name": u["name"],
+                    "bio": u["description"],
+                    "id": u["id"]
+                };
+
+            tweets[i]["user"] = user;
+            tweets[i]['link'] = "https://twitter.com/" + user["username"] + "/status/" + tweets[i]["id"];
+
+            var tags = [];
+            for (var j = 0; j < e["hashtags"].length; j++) {
+                tags.push(e["hashtags"][j]["text"]);
+            }
+            tweets[i]["tags"] = tags;
+
+            // Media could be images, video etc - look for the first image only
+            if (e["media"]) {
+                var image;
+                for (var j = 0; j < e["media"].length; j++) {
+                    if (e["media"][j]["type"] === "photo") {
+                        image = e["media"][j];
+                        break;
+                    }
+                }
+                if (image) {
+                    tweets[i]["images"] = {
+                        "low_resolution" : {
+                            "url" : image["media_url"] + ":small",
+                            "width": image["sizes"]["small"]["w"],
+                            "height": image["sizes"]["small"]["h"]
+                        },
+                        "thumbnail" : {
+                            "url" : image["media_url"] + ":thumb",
+                            "width": image["sizes"]["thumb"]["w"],
+                            "height": image["sizes"]["thumb"]["h"]
+                        },
+                        "standard_resolution" : {
+                            "url" : image["media_url"] + ":medium",
+                            "width": image["sizes"]["medium"]["w"],
+                            "height": image["sizes"]["medium"]["h"]
+                        }
+                    };
+                }
+            }
+            delete tweets[i]["entities"];
+
+            // Defaults
+            if (!tweets[i]["images"]) {
+                tweets[i]["images"] = false;
+            }
+
+            if (!tweets[i]["location"]) {
+                tweets[i]["location"] = null;
+            }
+
+            tweets[i]["caption"] = {text: tweets[i]["text"]};
+            delete tweets[i]["text"];
+
+            // Once you munge, you'll never go back
+            tweets[i]["munged"] = true;
+        }
+    }
+
+    return tweets
+
+}
+
 function storenew( existing, fresh, designer ){
 
     var deferred = Q.defer();
 
     var keylist = [
             "location",
-            "entities",
-            "created_at",
-            "id_str",
-            "text",
-            "user"
+            "tags",
+            "created_time",
+            "link",
+            "images",
+            "type",
+            "id",
+            "user",
+            "country",
+            "caption",
+            "munged"
         ],
-        map = {
-            "created_at": "created_time",
-            "id_str": "id"
-        },
         toinsert = [],
         i;
+
+    // Munge ahoy!
+    fresh = mungetweets(fresh);
 
     i = fresh.length;
 
@@ -45,12 +131,6 @@ function storenew( existing, fresh, designer ){
         for(var key in fresh[i]){
             if( keylist.indexOf( key ) < 0 ){
                 delete fresh[i][key]
-            }
-            // Map Tweet properties to Instagram names!
-            if (map[key]) {
-                var copy = map[key];
-                fresh[i][copy] = fresh[i][key];
-                delete fresh[i][key];
             }
             // Convert time to integer.
             if( key === "created_time" ){
@@ -64,68 +144,6 @@ function storenew( existing, fresh, designer ){
             }
         }
         fresh[i].type = "twitter";
-
-        // Munge the rest
-        var u = fresh[i]["user"],
-            e = fresh[i]["entities"],
-            user = {
-                "username": u["screen_name"],
-                "website": u["url"],
-                "profile_picture": u["profile_image_url"],
-                "full_name": u["name"],
-                "bio": u["description"],
-                "id": u["id"]
-            };
-
-        fresh[i]["user"] = user;
-        fresh[i]['link'] = "https://twitter.com/" + user["username"] + "/status/" + fresh[i]["id"];
-
-        var tags = [];
-        for (var j = 0; j < e["hashtags"].length; j++) {
-            tags.push(e["hashtags"][j]["text"]);
-        }
-        fresh[i]["tags"] = tags;
-
-        if (e["media"]) {
-            var image;
-            for (var j = 0; j < e["media"].length; j++) {
-                if (e["media"][j]["type"] === "photo") {
-                    image = e["media"][j];
-                    break;
-                }
-            }
-            if (image) {
-                fresh[i]["images"] = {
-                    "low_resolution" : {
-                        "url" : image["media_url"] + ":small",
-                        "width": image["sizes"]["small"]["w"],
-                        "height": image["sizes"]["small"]["h"]
-                    },
-                    "thumbnail" : {
-                        "url" : image["media_url"] + ":thumb",
-                        "width": image["sizes"]["thumb"]["w"],
-                        "height": image["sizes"]["thumb"]["h"]
-                    },
-                    "standard_resolution" : {
-                        "url" : image["media_url"] + ":medium",
-                        "width": image["sizes"]["medium"]["w"],
-                        "height": image["sizes"]["medium"]["h"]
-                    }
-                };
-            }
-        }
-        delete fresh[i]["entities"];
-
-        if (!fresh[i]["images"]) {
-            fresh[i]["images"] = false;
-        }
-
-        if (!fresh[i]["location"]) {
-            fresh[i]["location"] = null;
-        }
-
-        fresh[i]["caption"] = {text: fresh[i]["text"]};
-        delete fresh[i]["text"];
     }
 
     // Created array of items to insert.
