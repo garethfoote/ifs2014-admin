@@ -322,21 +322,6 @@ instagram.init = function( app, auth, io ){
     };
     get('/designers/update', app, auth, updatefromdesigners );
 
-    var setalltype = function(req, response){
-
-        db.collection.update({ type : { $ne : "instagram" }},
-                    { $set: { type : "instagram" }},
-                    { multi : true },
-                    function(err, items){
-                        response.render('message', {
-                            message : "Updated:"+ items,
-                            user: req.user
-                        });
-                    });
-
-    };
-    get('/instagram/setalltype', app, auth, setalltype );
-
     // Select single designer by id.
     var selectdesigner = function(req, response){
 
@@ -406,7 +391,9 @@ instagram.init = function( app, auth, io ){
                 for (var j = 0; j < fresh.length; j++) {
                     // Only make this available if location is present.
                     // #tag items without location do not have default/fallback.
-                    if( fresh[j].location ){
+                    console.log(j, fresh[j].location);
+                    // if( fresh[j].location ){
+                        console.log(j);
 
                         var freshid = fresh[j].id;
                         hashtagdata[freshid] = fresh[j];
@@ -416,7 +403,7 @@ instagram.init = function( app, auth, io ){
                         if( existingids.indexOf( freshid ) < 0 ){
                             existing.push( hashtagdata[freshid] );
                         }
-                    }
+                    // }
                 };
 
                 response.render('contentitems', {
@@ -473,5 +460,80 @@ instagram.init = function( app, auth, io ){
 
     };
     get('/instagram/checknew/designers', app, auth, checkdesigners );
+
+    // Manipulate data.
+    var nogeo = function(req, response){
+
+        config.getdesigners()
+            .then(function( designers ){
+
+                var userids = [];
+                for (var i = 0; i < designers.length; i++) {
+                    userids.push(String(designers[i].ig_user_id));
+                };
+
+                var query = {
+                    "user.id" : { $nin : userids },
+                    "location" : null
+                };
+
+                getexisting(query)
+                    .then(function(results){
+                        response.render('contentitems', {
+                            contentitem : results, user: req.user
+                        });
+                    }).
+                    fail(function(err){
+                        console.log(err);
+
+                    });
+
+            });
+
+    };
+    get('/instagram/nogeo', app, auth, nogeo );
+
+    var nogeoremove = function(req, response){
+
+        config.getdesigners()
+            .then(function( designers ){
+
+                var userids = [];
+                for (var i = 0; i < designers.length; i++) {
+                    userids.push(String(designers[i].ig_user_id));
+                };
+
+                var query = {
+                    "user.id" : { $nin : userids },
+                    "location" : null
+                };
+
+                db.collection.remove(query,
+                        function(err, items){
+                            response.render('message', {
+                                message :"Deleted " + items +".",
+                                user: req.user
+                            });
+                        });
+
+            });
+
+    };
+    get('/instagram/nogeo/remove', app, auth, nogeoremove );
+
+    var setalltype = function(req, response){
+
+        db.collection.update({ type : { $ne : "instagram" }},
+                    { $set: { type : "instagram" }},
+                    { multi : true },
+                    function(err, items){
+                        response.render('message', {
+                            message : "Updated:"+ items,
+                            user: req.user
+                        });
+                    });
+
+    };
+    get('/instagram/setalltype', app, auth, setalltype );
 
 };
