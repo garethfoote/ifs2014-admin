@@ -336,9 +336,17 @@ twitter.insertselected = function( id ){
 
     var data = hashtagdata[id];
 
-    data.selected = true;
+    if( data ){
 
-    storenew([], [data]);
+        data.selected = true;
+        storenew([], [data]);
+
+    } else {
+        console.error("cannot find hashtag data");
+        console.log("ERROR: cannot find hashtag data");
+        console.log(id);
+
+    }
 
 }
 
