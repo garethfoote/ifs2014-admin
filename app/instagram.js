@@ -320,7 +320,7 @@ instagram.init = function( app, auth, io ){
             });
 
     };
-    get('/designers/update', app, auth, updatefromdesigners );
+    get('/instagram/designers/update', app, auth, updatefromdesigners );
 
     // Select single designer by id.
     var selectdesigner = function(req, response){

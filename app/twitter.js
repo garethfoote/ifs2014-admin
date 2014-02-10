@@ -479,6 +479,52 @@ twitter.init = function( app, auth, io ){
     };
     get('/twitter/selected', app, auth, showselected );
 
+    // Update all designers from designer.json.
+    var updatefromdesigners = function(req, response){
+
+        config.getdesigners()
+            .then(function(designers){
+
+                var allowedkeys = [
+                        "name",
+                        "country",
+                        "home",
+                        "venue"
+                    ],
+                    contentupdated = 0,
+                    designersupdated = 0;
+
+                for (var i = 0; i < designers.length; i++) {
+                    var userid = String(designers[i].twitter_id),
+                        set = {}, key;
+
+                    // Create "set" object for update.
+                    for (var j = 0; j < allowedkeys.length; j++) {
+                        key = allowedkeys[j];
+                        set[key] = designers[i][key];
+                    };
+
+                    db.collection.update({ "twitter_id" : userid },
+                            { $set: set },
+                            { multi : true },
+                            function(err, items){
+                                designersupdated++;
+                                contentupdated += items;
+                                if( designersupdated === designers.length ){
+                                    response.render('message', {
+                                        message : "Updated "+ contentupdated + " items",
+                                        user: req.user
+                                    });
+                                }
+
+                            });
+                };
+
+            });
+
+    };
+    get('/twitter/designers/update', app, auth, updatefromdesigners );
+
     // Retrieve new designers content.
     var checkdesigners = function(req, response){
 
