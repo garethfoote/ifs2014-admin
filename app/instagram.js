@@ -289,6 +289,7 @@ instagram.init = function( app, auth, io ){
                         "venue"
                     ],
                     contentupdated = 0,
+                    designerswithid = 0,
                     designersupdated = 0;
 
                 for (var i = 0; i < designers.length; i++) {
@@ -301,20 +302,23 @@ instagram.init = function( app, auth, io ){
                         set[key] = designers[i][key];
                     };
 
-                    db.collection.update({ "user.id" : userid },
-                            { $set: set },
-                            { multi : true },
-                            function(err, items){
-                                designersupdated++;
-                                contentupdated += items;
-                                if( designersupdated === designers.length ){
-                                    response.render('message', {
-                                        message : "Updated "+ contentupdated + " items",
-                                        user: req.user
-                                    });
-                                }
+                    if( userid !== "" ){
+                        designerswithid++;
+                        db.collection.update({ "user.id" : userid },
+                                { $set: set },
+                                { multi : true },
+                                function(err, items){
+                                    designersupdated++;
+                                    contentupdated += items;
+                                    if( designersupdated === designerswithid ){
+                                        response.render('message', {
+                                            message : "Updated "+ contentupdated + " items",
+                                            user: req.user
+                                        });
+                                    }
 
-                            });
+                                });
+                    }
                 };
 
             });
